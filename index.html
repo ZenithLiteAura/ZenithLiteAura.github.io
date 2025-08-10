@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<title>计时器</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+/* -------------- 视觉皮肤 -------------- */
+:root{--bg:#111827;--card:#1f2937;--accent:#10b981;--accent2:#f43f5e;--text:#f9fafb;--muted:#9ca3af;--font:'Inter',Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;padding:0;font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{margin:40px 0 20px;font-weight:700;font-size:2.2rem;letter-spacing:.05em}
+#addBtn{background:linear-gradient(135deg,var(--accent),#34d399);border:none;padding:14px 32px;border-radius:50px;font-size:1rem;font-weight:600;color:#fff;cursor:pointer;box-shadow:0 8px 20px rgba(16,185,129,.35);transition:transform .25s}
+#timers{display:flex;flex-wrap:wrap;justify-content:center;gap:28px;padding:20px 20px 80px}
+.timer{width:300px;background:var(--card);border-radius:24px;padding:26px 24px;display:flex;flex-direction:column;gap:18px;box-shadow:0 8px 32px rgba(0,0,0,.35);backdrop-filter:blur(8px);transition:transform .3s}
+.timer:hover{transform:translateY(-4px)}
+.timer input[type=text]{background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 14px;color:var(--text);font-size:.95rem;outline:none}
+.timer .display{font-size:3rem;font-weight:700;text-align:center;letter-spacing:.05em;margin:8px 0;font-variant-numeric:tabular-nums}
+.timer .inputs{display:flex;gap:12px}
+.timer .inputs input{flex:1;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px;color:var(--text);text-align:center;font-size:1.1rem;outline:none}
+.timer .buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.timer button{border:none;border-radius:12px;padding:12px 0;font-size:.95rem;font-weight:600;cursor:pointer;transition:transform .2s}
+.timer .start{background:var(--accent);color:#fff}
+.timer .pause{background:#f59e0b;color:#fff}
+.timer .reset{background:rgba(255,255,255,.08);color:var(--muted)}
+.timer .remove{background:var(--accent2);color:#fff}
+audio{display:none}
+@media(max-width:600px){h1{font-size:1.8rem}.timer{width:260px}}
+
+/* -------------- 点击动画 -------------- */
+.click-scale{
+  transform:scale(1);
+  transition:transform .15s cubic-bezier(.25,.8,.25,1);
+}
+.click-scale:active{
+  transform:scale(.93);
+}
+/* 把动画类挂到所有可点元素 */
+button, .timer, #addBtn, input[type=number], input[type=text]{
+  -webkit-tap-highlight-color:transparent;
+}
+</style>
+</head>
+<body>
+  <h1>计时器</h1>
+  <button id="addBtn" class="click-scale">＋ 添加计时器</button>
+  <div id="timers"></div>
+
+<script>
+/* -------------- 业务逻辑（含断点续跑） -------------- */
+const sounds=[
+'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg',
+'https://actions.google.com/sounds/v1/alarms/beep_short.ogg',
+'https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg'
+];
+const STORAGE_KEY='MULTI_TIMERS_V2';
+let gid=0;
+const fmt=t=>`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+
+function load(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[]}catch{return []}}
+function save(arr){localStorage.setItem(STORAGE_KEY,JSON.stringify(arr))}
+
+function createTimer(stored={}){
+  const id=stored.id||++gid;
+  const wrap=document.createElement('div');
+  wrap.className='timer click-scale';
+  wrap.dataset.id=id;
+  wrap.innerHTML=`
+    <input class="label click-scale" type="text" placeholder="给计时器起个名字" value="${stored.label||''}">
+    <div class="display">${fmt(stored.total||300)}</div>
+    <div class="inputs">
+      <input class="min click-scale" type="number" min="0" max="999" value="${Math.floor((stored.total||300)/60)}">
+      <input class="sec click-scale" type="number" min="0" max="59" value="${(stored.total||300)%60}">
+    </div>
+    <div class="buttons">
+      <button class="start click-scale" style="${stored.running?'display:none':''}">开始</button>
+      <button class="pause click-scale" style="${stored.running?'':'display:none'}">暂停</button>
+      <button class="reset click-scale">复位</button>
+      <button class="remove click-scale">删除</button>
+    </div>
+    <audio preload="auto" src="${sounds[id%sounds.length]}"></audio>
+  `;
+  document.getElementById('timers').appendChild(wrap);
+
+  const label=wrap.querySelector('.label'),display=wrap.querySelector('.display');
+  const min=wrap.querySelector('.min'),sec=wrap.querySelector('.sec');
+  const startBtn=wrap.querySelector('.start'),pauseBtn=wrap.querySelector('.pause');
+  const resetBtn=wrap.querySelector('.reset'),removeBtn=wrap.querySelector('.remove');
+  const audio=wrap.querySelector('audio');
+
+  let cd,total=stored.total||300,running=stored.running||false,finishAt=stored.finishAt||0;
+
+  const saveState=()=>{
+    const arr=load();
+    const idx=arr.findIndex(s=>s.id==id);
+    const obj={id,label:label.value,total,running,finishAt:running?Date.now()+total*1000:0};
+    if(idx>-1) arr[idx]=obj; else arr.push(obj);
+    save(arr);
+  };
+  label.oninput=min.oninput=sec.oninput=saveState;
+
+  const update=()=>display.textContent=fmt(total);
+
+  const reset=()=>{
+    clearInterval(cd);
+    running=false;
+    total=+min.value*60+ +sec.value||1;
+    update();
+    startBtn.style.display='inline-block';
+    pauseBtn.style.display='none';
+    saveState();
+  };
+  resetBtn.onclick=reset;
+
+  removeBtn.onclick=()=>{
+    clearInterval(cd);
+    wrap.remove();
+    const arr=load().filter(s=>s.id!=id);
+    save(arr);
+  };
+
+  startBtn.onclick=()=>{
+    if(total<=0){reset();return;}
+    running=true;
+    finishAt=Date.now()+total*1000;
+    saveState();
+    startBtn.style.display='none';
+    pauseBtn.style.display='inline-block';
+    cd=setInterval(tick,1000);
+  };
+  pauseBtn.onclick=()=>{
+    clearInterval(cd);
+    running=false;
+    saveState();
+    startBtn.style.display='inline-block';
+    pauseBtn.style.display='none';
+  };
+  function tick(){
+    total=Math.round((finishAt-Date.now())/1000);
+    if(total<=0){
+      clearInterval(cd);total=0;running=false;saveState();
+      audio.play();
+      alert(`「${label.value||'计时器'}」到点！`);
+      reset();
+      return;
+    }
+    update();
+    saveState();
+  }
+  if(running){
+    startBtn.style.display='none';pauseBtn.style.display='inline-block';
+    tick();cd=setInterval(tick,1000);
+  }else update();
+}
+
+load().forEach(createTimer);
+document.getElementById('addBtn').addEventListener('click',()=>createTimer());
+</script>
+</body>
+</html>
