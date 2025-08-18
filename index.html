@@ -2,159 +2,537 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"/>
-<title>计时器</title>
+<title>多功能计时器</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <style>
 /* -------------- 视觉皮肤 -------------- */
-:root{--bg:#111827;--card:#1f2937;--accent:#10b981;--accent2:#f43f5e;--text:#f9fafb;--muted:#9ca3af;--font:'Inter',Helvetica,Arial,sans-serif}
+:root{
+  --bg:#111827;
+  --card:#1f2937;
+  --accent:#10b981;
+  --accent2:#f43f5e;
+  --warning:#f59e0b;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --font:'Inter',Helvetica,Arial,sans-serif;
+  --border:rgba(255,255,255,.15);
+}
+
 *{box-sizing:border-box}
-body{margin:0;padding:0;font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center}
-h1{margin:40px 0 20px;font-weight:700;font-size:2.2rem;letter-spacing:.05em}
-#addBtn{background:linear-gradient(135deg,var(--accent),#34d399);border:none;padding:14px 32px;border-radius:50px;font-size:1rem;font-weight:600;color:#fff;cursor:pointer;box-shadow:0 8px 20px rgba(16,185,129,.35);transition:transform .25s}
-#timers{display:flex;flex-wrap:wrap;justify-content:center;gap:28px;padding:20px 20px 80px}
-.timer{width:300px;background:var(--card);border-radius:24px;padding:26px 24px;display:flex;flex-direction:column;gap:18px;box-shadow:0 8px 32px rgba(0,0,0,.35);backdrop-filter:blur(8px);transition:transform .3s}
-.timer:hover{transform:translateY(-4px)}
-.timer input[type=text]{background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 14px;color:var(--text);font-size:.95rem;outline:none}
-.timer .display{font-size:3rem;font-weight:700;text-align:center;letter-spacing:.05em;margin:8px 0;font-variant-numeric:tabular-nums}
-.timer .inputs{display:flex;gap:12px}
-.timer .inputs input{flex:1;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px;color:var(--text);text-align:center;font-size:1.1rem;outline:none}
+body{
+  margin:0;padding:0;font-family:var(--font);background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+}
+
+h1{margin:40px 0 20px;font-weight:700;font-size:2.2rem;letter-spacing:.05em;text-align:center}
+
+#addBtn{
+  background:linear-gradient(135deg,var(--accent),#34d399);border:none;
+  padding:14px 32px;border-radius:50px;font-size:1rem;font-weight:600;
+  color:#fff;cursor:pointer;box-shadow:0 8px 20px rgba(16,185,129,.35);
+  transition:transform .25s;margin-bottom:20px;
+}
+
+#timers{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:28px;
+  padding:20px 20px 80px;max-width:1200px;
+}
+
+.timer{
+  width:320px;background:var(--card);border-radius:24px;
+  /* [修复] 减少左右内边距，从24px减到20px */
+  padding:24px 20px; 
+  display:flex;flex-direction:column;gap:18px;
+  box-shadow:0 8px 32px rgba(0,0,0,.35);backdrop-filter:blur(8px);
+  transition:transform .3s,box-shadow .3s;position:relative;
+}
+
+.timer:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.45)}
+
+.timer.finished{
+  animation:pulse 1s infinite;
+  box-shadow:0 8px 32px rgba(244,63,94,.4);
+}
+
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.02)}
+}
+
+.timer input[type=text]{
+  background:transparent;border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;color:var(--text);font-size:.95rem;outline:none;
+  transition:border-color .3s;
+}
+
+.timer input[type=text]:focus{border-color:var(--accent)}
+
+.timer .display{
+  font-size:3rem;font-weight:700;text-align:center;letter-spacing:.05em;
+  margin:8px 0;font-variant-numeric:tabular-nums;
+  transition:color .3s;
+}
+
+.timer.finished .display{color:var(--accent2)}
+
+.timer .time-inputs{
+  display:flex;
+  /* [修复] 减小元素间距，从8px减到6px */
+  gap:3px;
+  align-items:center;
+}
+
+.timer .time-inputs input{
+  flex:1;background:transparent;border:1px solid var(--border);
+  border-radius:10px;padding:10px;color:var(--text);text-align:center;
+  font-size:1.1rem;outline:none;transition:border-color .3s;
+  /* 移除浏览器默认的spin按钮，它们也占空间 */
+  -moz-appearance: textfield;
+}
+.timer .time-inputs input::-webkit-outer-spin-button,
+.timer .time-inputs input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+.timer .time-inputs input:focus{border-color:var(--accent)}
+
+.timer .time-inputs span{
+  color:var(--muted);
+  /* [修复] 稍微缩小单位字体，并确保它不被压缩 */
+  font-size:.85rem; 
+  font-weight:500;
+  flex-shrink: 0;
+}
+
 .timer .buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.timer button{border:none;border-radius:12px;padding:12px 0;font-size:.95rem;font-weight:600;cursor:pointer;transition:transform .2s}
+
+.timer button{
+  border:none;border-radius:12px;padding:12px 0;font-size:.95rem;
+  font-weight:600;cursor:pointer;transition:transform .2s,background .3s;
+}
+
 .timer .start{background:var(--accent);color:#fff}
-.timer .pause{background:#f59e0b;color:#fff}
+.timer .pause{background:var(--warning);color:#fff}
 .timer .reset{background:rgba(255,255,255,.08);color:var(--muted)}
 .timer .remove{background:var(--accent2);color:#fff}
-audio{display:none}
-@media(max-width:600px){h1{font-size:1.8rem}.timer{width:260px}}
 
-/* -------------- 点击动画 -------------- */
+.timer button:hover{transform:translateY(-1px)}
+
+/* 确认对话框样式 */
+.confirm-dialog{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;
+  z-index:1000;
+}
+
+.confirm-content{
+  background:var(--card);padding:30px;border-radius:20px;
+  text-align:center;max-width:400px;margin:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+
+.confirm-content h3{margin:0 0 15px;color:var(--text)}
+.confirm-content p{margin:0 0 25px;color:var(--muted)}
+
+.confirm-buttons{display:flex;gap:12px;justify-content:center}
+.confirm-buttons button{
+  padding:10px 20px;border:none;border-radius:10px;
+  font-weight:600;cursor:pointer;transition:transform .2s;
+}
+
+.confirm-cancel{background:rgba(255,255,255,.1);color:var(--muted)}
+.confirm-ok{background:var(--accent2);color:#fff}
+
+/* 通知样式 */
+.notification{
+  position:fixed;top:20px;right:20px;background:var(--card);
+  padding:16px 20px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.5);
+  border-left:4px solid var(--accent2);z-index:1001;
+  transform:translateX(400px);transition:transform .3s;
+}
+
+.notification.show{transform:translateX(0)}
+
+/* 响应式设计 */
+@media(max-width:600px){
+  h1{font-size:1.8rem;margin:20px 0 15px}
+  .timer{width:280px;padding:20px 18px}
+  .timer .display{font-size:2.5rem}
+  #timers{gap:20px;padding:15px 15px 60px}
+}
+
+/* 点击动画 */
 .click-scale{
   transform:scale(1);
   transition:transform .15s cubic-bezier(.25,.8,.25,1);
 }
-.click-scale:active{
-  transform:scale(.93);
-}
-/* 把动画类挂到所有可点元素 */
-button, .timer, #addBtn, input[type=number], input[type=text]{
-  -webkit-tap-highlight-color:transparent;
-}
+.click-scale:active{transform:scale(.93)}
+
+button, .timer, #addBtn, input{-webkit-tap-highlight-color:transparent}
 </style>
 </head>
 <body>
-  <h1>计时器</h1>
+  <h1>🕐 多功能计时器</h1>
   <button id="addBtn" class="click-scale">＋ 添加计时器</button>
   <div id="timers"></div>
 
+  <!-- 确认对话框 -->
+  <div class="confirm-dialog" id="confirmDialog">
+    <div class="confirm-content">
+      <h3>确认删除</h3>
+      <p>确定要删除这个计时器吗？此操作无法撤销。</p>
+      <div class="confirm-buttons">
+        <button class="confirm-cancel" onclick="hideConfirm()">取消</button>
+        <button class="confirm-ok" onclick="confirmDelete()">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 通知容器 -->
+  <div class="notification" id="notification"></div>
+
 <script>
-/* -------------- 业务逻辑（含断点续跑） -------------- */
-const sounds=[
-'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg',
-'https://actions.google.com/sounds/v1/alarms/beep_short.ogg',
-'https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg'
-];
-const STORAGE_KEY='MULTI_TIMERS_V2';
-let gid=0;
-const fmt=t=>`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+/* -------------- 音频生成（离线） -------------- */
+function createBeepSound(frequency = 800, duration = 1000) {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.frequency.value = frequency;
+  oscillator.type = 'sine';
+  
+  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+  
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + duration / 1000);
+}
 
-function load(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[]}catch{return []}}
-function save(arr){localStorage.setItem(STORAGE_KEY,JSON.stringify(arr))}
+/* -------------- 核心逻辑 -------------- */
+const STORAGE_KEY = 'MULTI_TIMERS_V3';
+let gid = 0;
+let deleteTimerId = null;
 
-function createTimer(stored={}){
-  const id=stored.id||++gid;
-  const wrap=document.createElement('div');
-  wrap.className='timer click-scale';
-  wrap.dataset.id=id;
-  wrap.innerHTML=`
-    <input class="label click-scale" type="text" placeholder="给计时器起个名字" value="${stored.label||''}">
-    <div class="display">${fmt(stored.total||300)}</div>
-    <div class="inputs">
-      <input class="min click-scale" type="number" min="0" max="999" value="${Math.floor((stored.total||300)/60)}">
-      <input class="sec click-scale" type="number" min="0" max="59" value="${(stored.total||300)%60}">
+// 格式化时间显示
+const formatTime = (totalSeconds) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  
+  if (hours > 0) {
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+};
+
+// 本地存储操作
+function loadTimers() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTimers(timers) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(timers));
+}
+
+// 显示通知
+function showNotification(message) {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.classList.add('show');
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, 3000);
+}
+
+// 确认对话框
+function showConfirm(timerId) {
+  deleteTimerId = timerId;
+  document.getElementById('confirmDialog').style.display = 'flex';
+}
+
+function hideConfirm() {
+  document.getElementById('confirmDialog').style.display = 'none';
+  deleteTimerId = null;
+}
+
+function confirmDelete() {
+  if (deleteTimerId) {
+    const timerElement = document.querySelector(`[data-id="${deleteTimerId}"]`);
+    if (timerElement) {
+      // 清除定时器
+      const timerInstance = timerElement.timerInstance;
+      if (timerInstance) {
+        clearInterval(timerInstance.intervalId);
+      }
+      
+      // 移除DOM元素
+      timerElement.remove();
+      
+      // 更新存储
+      const timers = loadTimers().filter(t => t.id !== deleteTimerId);
+      saveTimers(timers);
+      
+      showNotification('计时器已删除');
+    }
+  }
+  hideConfirm();
+}
+
+// 输入验证
+function validateTimeInput(input, max) {
+  let value = parseInt(input.value) || 0;
+  if (value < 0) value = 0;
+  if (value > max) value = max;
+  input.value = value;
+  return value;
+}
+
+// 创建计时器
+function createTimer(stored = {}) {
+  const id = stored.id || ++gid;
+  const wrap = document.createElement('div');
+  wrap.className = 'timer click-scale';
+  wrap.dataset.id = id;
+  
+  const defaultHours = Math.floor((stored.total || 300) / 3600);
+  const defaultMinutes = Math.floor(((stored.total || 300) % 3600) / 60);
+  const defaultSeconds = (stored.total || 300) % 60;
+  
+  wrap.innerHTML = `
+    <input class="label click-scale" type="text" placeholder="给计时器起个名字" value="${stored.label || ''}" maxlength="20">
+    <div class="display">${formatTime(stored.total || 300)}</div>
+    <div class="time-inputs">
+      <input class="hours click-scale" type="number" min="0" max="23" value="${defaultHours}" placeholder="时">
+      <span>时</span>
+      <input class="minutes click-scale" type="number" min="0" max="59" value="${defaultMinutes}" placeholder="分">
+      <span>分</span>
+      <input class="seconds click-scale" type="number" min="0" max="59" value="${defaultSeconds}" placeholder="秒">
+      <span>秒</span>
     </div>
     <div class="buttons">
-      <button class="start click-scale" style="${stored.running?'display:none':''}">开始</button>
-      <button class="pause click-scale" style="${stored.running?'':'display:none'}">暂停</button>
-      <button class="reset click-scale">复位</button>
+      <button class="start click-scale" style="${stored.running ? 'display:none' : ''}">开始</button>
+      <button class="pause click-scale" style="${stored.running ? '' : 'display:none'}">暂停</button>
+      <button class="reset click-scale">重置</button>
       <button class="remove click-scale">删除</button>
     </div>
-    <audio preload="auto" src="${sounds[id%sounds.length]}"></audio>
   `;
+  
   document.getElementById('timers').appendChild(wrap);
-
-  const label=wrap.querySelector('.label'),display=wrap.querySelector('.display');
-  const min=wrap.querySelector('.min'),sec=wrap.querySelector('.sec');
-  const startBtn=wrap.querySelector('.start'),pauseBtn=wrap.querySelector('.pause');
-  const resetBtn=wrap.querySelector('.reset'),removeBtn=wrap.querySelector('.remove');
-  const audio=wrap.querySelector('audio');
-
-  let cd,total=stored.total||300,running=stored.running||false,finishAt=stored.finishAt||0;
-
-  const saveState=()=>{
-    const arr=load();
-    const idx=arr.findIndex(s=>s.id==id);
-    const obj={id,label:label.value,total,running,finishAt:running?Date.now()+total*1000:0};
-    if(idx>-1) arr[idx]=obj; else arr.push(obj);
-    save(arr);
+  
+  // 获取DOM元素
+  const label = wrap.querySelector('.label');
+  const display = wrap.querySelector('.display');
+  const hoursInput = wrap.querySelector('.hours');
+  const minutesInput = wrap.querySelector('.minutes');
+  const secondsInput = wrap.querySelector('.seconds');
+  const startBtn = wrap.querySelector('.start');
+  const pauseBtn = wrap.querySelector('.pause');
+  const resetBtn = wrap.querySelector('.reset');
+  const removeBtn = wrap.querySelector('.remove');
+  
+  // 计时器状态
+  let intervalId = null;
+  let total = stored.total || 300;
+  let running = stored.running || false;
+  let finishAt = stored.finishAt || 0;
+  
+  // 保存定时器实例到DOM元素
+  wrap.timerInstance = { intervalId };
+  
+  // 保存状态
+  const saveState = () => {
+    const timers = loadTimers();
+    const index = timers.findIndex(t => t.id === id);
+    const timerData = {
+      id,
+      label: label.value.trim(),
+      total,
+      running,
+      finishAt: running ? Date.now() + total * 1000 : 0
+    };
+    
+    if (index > -1) {
+      timers[index] = timerData;
+    } else {
+      timers.push(timerData);
+    }
+    saveTimers(timers);
   };
-  label.oninput=min.oninput=sec.oninput=saveState;
-
-  const update=()=>display.textContent=fmt(total);
-
-  const reset=()=>{
-    clearInterval(cd);
-    running=false;
-    total=+min.value*60+ +sec.value||1;
-    update();
-    startBtn.style.display='inline-block';
-    pauseBtn.style.display='none';
+  
+  // 更新显示
+  const updateDisplay = () => {
+    display.textContent = formatTime(total);
+  };
+  
+  // 重置计时器
+  const reset = () => {
+    clearInterval(intervalId);
+    intervalId = null;
+    wrap.timerInstance.intervalId = null;
+    running = false;
+    
+    // 计算新的总时间
+    const hours = validateTimeInput(hoursInput, 23);
+    const minutes = validateTimeInput(minutesInput, 59);
+    const seconds = validateTimeInput(secondsInput, 59);
+    total = hours * 3600 + minutes * 60 + seconds;
+    
+    if (total === 0) {
+      total = 1; // 最少1秒
+      secondsInput.value = 1;
+    }
+    
+    updateDisplay();
+    startBtn.style.display = 'inline-block';
+    pauseBtn.style.display = 'none';
+    wrap.classList.remove('finished');
     saveState();
   };
-  resetBtn.onclick=reset;
-
-  removeBtn.onclick=()=>{
-    clearInterval(cd);
-    wrap.remove();
-    const arr=load().filter(s=>s.id!=id);
-    save(arr);
-  };
-
-  startBtn.onclick=()=>{
-    if(total<=0){reset();return;}
-    running=true;
-    finishAt=Date.now()+total*1000;
+  
+  // 计时循环
+  const tick = () => {
+    total = Math.max(0, Math.round((finishAt - Date.now()) / 1000));
+    
+    if (total <= 0) {
+      clearInterval(intervalId);
+      intervalId = null;
+      wrap.timerInstance.intervalId = null;
+      total = 0;
+      running = false;
+      
+      // 播放提醒音
+      try {
+        createBeepSound(800, 1000);
+        setTimeout(() => createBeepSound(1000, 800), 300);
+      } catch (e) {
+        console.log('音频播放失败:', e);
+      }
+      
+      // 显示通知和视觉效果
+      wrap.classList.add('finished');
+      showNotification(`⏰ ${label.value.trim() || '计时器'}时间到！`);
+      
+      // 自动重置到初始状态
+      setTimeout(() => {
+        reset();
+      }, 5000);
+      
+      return;
+    }
+    
+    updateDisplay();
     saveState();
-    startBtn.style.display='none';
-    pauseBtn.style.display='inline-block';
-    cd=setInterval(tick,1000);
   };
-  pauseBtn.onclick=()=>{
-    clearInterval(cd);
-    running=false;
-    saveState();
-    startBtn.style.display='inline-block';
-    pauseBtn.style.display='none';
-  };
-  function tick(){
-    total=Math.round((finishAt-Date.now())/1000);
-    if(total<=0){
-      clearInterval(cd);total=0;running=false;saveState();
-      audio.play();
-      alert(`「${label.value||'计时器'}」到点！`);
+  
+  // 事件绑定
+  label.addEventListener('input', saveState);
+  
+  [hoursInput, minutesInput, secondsInput].forEach(input => {
+    input.addEventListener('input', () => {
+      if (!running) {
+        const hours = validateTimeInput(hoursInput, 23);
+        const minutes = validateTimeInput(minutesInput, 59);
+        const seconds = validateTimeInput(secondsInput, 59);
+        total = hours * 3600 + minutes * 60 + seconds;
+        updateDisplay();
+        saveState();
+      }
+    });
+    
+    input.addEventListener('blur', () => {
+      validateTimeInput(input, input === hoursInput ? 23 : 59);
+    });
+  });
+  
+  startBtn.addEventListener('click', () => {
+    if (total <= 0) {
       reset();
       return;
     }
-    update();
+    
+    running = true;
+    finishAt = Date.now() + total * 1000;
+    startBtn.style.display = 'none';
+    pauseBtn.style.display = 'inline-block';
+    wrap.classList.remove('finished');
+    
+    intervalId = setInterval(tick, 1000);
+    wrap.timerInstance.intervalId = intervalId;
     saveState();
+  });
+  
+  pauseBtn.addEventListener('click', () => {
+    clearInterval(intervalId);
+    intervalId = null;
+    wrap.timerInstance.intervalId = null;
+    running = false;
+    startBtn.style.display = 'inline-block';
+    pauseBtn.style.display = 'none';
+    saveState();
+  });
+  
+  resetBtn.addEventListener('click', reset);
+  removeBtn.addEventListener('click', () => showConfirm(id));
+  
+  // 初始化状态
+  if (running && finishAt > Date.now()) {
+    startBtn.style.display = 'none';
+    pauseBtn.style.display = 'inline-block';
+    tick();
+    intervalId = setInterval(tick, 1000);
+    wrap.timerInstance.intervalId = intervalId;
+  } else {
+    updateDisplay();
   }
-  if(running){
-    startBtn.style.display='none';pauseBtn.style.display='inline-block';
-    tick();cd=setInterval(tick,1000);
-  }else update();
 }
 
-load().forEach(createTimer);
-document.getElementById('addBtn').addEventListener('click',()=>createTimer());
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+  // 加载已保存的计时器
+  loadTimers().forEach(createTimer);
+  
+  // 添加计时器按钮
+  document.getElementById('addBtn').addEventListener('click', () => {
+    createTimer();
+    showNotification('已添加新计时器');
+  });
+  
+  // 点击对话框外部关闭
+  document.getElementById('confirmDialog').addEventListener('click', (e) => {
+    if (e.target.id === 'confirmDialog') {
+      hideConfirm();
+    }
+  });
+  
+  // 添加点击动画效果
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('click-scale')) {
+      e.target.style.transform = 'scale(0.93)';
+      setTimeout(() => {
+        e.target.style.transform = '';
+      }, 150);
+    }
+  });
+});
+
+// 页面关闭前清理
+window.addEventListener('beforeunload', () => {
+  // 清理所有定时器
+  document.querySelectorAll('.timer').forEach(timer => {
+    if (timer.timerInstance && timer.timerInstance.intervalId) {
+      clearInterval(timer.timerInstance.intervalId);
+    }
+  });
+});
 </script>
 </body>
 </html>
