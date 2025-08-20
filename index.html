@@ -77,8 +77,8 @@ h1{margin:40px 0 20px;font-weight:700;font-size:2.2rem;letter-spacing:.05em;text
 
 .timer .time-inputs{
   display:flex;
-  /* [修复] 减小元素间距，从8px减到6px */
-  gap:3px;
+  /* [修复] 减小元素间距，从8px减到1px */
+  gap:1px;
   align-items:center;
 }
 
@@ -176,6 +176,9 @@ button, .timer, #addBtn, input{-webkit-tap-highlight-color:transparent}
 <body>
   <h1>计时器</h1>
   <button id="addBtn" class="click-scale">＋ 添加计时器</button>
+  <div id="audioPrompt" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--warning);color:white;padding:10px 20px;border-radius:8px;z-index:9999;display:none;">
+  👆 请点击页面任意位置启用声音
+</div>
   <div id="timers"></div>
 
   <!-- 确认对话框 -->
@@ -194,23 +197,98 @@ button, .timer, #addBtn, input{-webkit-tap-highlight-color:transparent}
   <div class="notification" id="notification"></div>
 
 <script>
-/* -------------- 音频生成（离线） -------------- */
-function createBeepSound(frequency = 800, duration = 1000) {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
+/* -------------- 音频生成（修复版） -------------- */
+let audioContext = null;
+let isAudioAllowed = false;
+
+// 初始化音频上下文（需要用户交互）
+function initAudio() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    isAudioAllowed = true;
+  }
+}
+
+// 统一的音频播放函数
+function playAlarmSound(duration = 30000) {
+  if (!isAudioAllowed || !audioContext) {
+    console.log('需要用户交互后才能播放音频');
+    return;
+  }
   
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  oscillator.frequency.value = frequency;
-  oscillator.type = 'sine';
-  
-  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
-  
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + duration / 1000);
+  try {
+    // 创建多个振荡器
+    const oscillator1 = audioContext.createOscillator();
+    const oscillator2 = audioContext.createOscillator();
+    const oscillator3 = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    // 连接所有振荡器
+    oscillator1.connect(gainNode);
+    oscillator2.connect(gainNode);
+    oscillator3.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // 设置频率（不和谐音程，更有警报感）
+    oscillator1.frequency.value = 880;   // A5
+    oscillator2.frequency.value = 1244;  // D#6/Eb6
+    oscillator3.frequency.value = 1661;  // G#6/Ab6
+    
+    // 使用不同的波形
+    oscillator1.type = 'square';    // 方波 - 尖锐
+    oscillator2.type = 'sawtooth';  // 锯齿波 - 刺耳
+    oscillator3.type = 'square';    // 方波 - 尖锐
+    
+    const now = audioContext.currentTime;
+    const totalDuration = duration / 1000;
+    
+    // 设置初始音量（很大）
+    gainNode.gain.setValueAtTime(0.9, now);
+    
+    // 创建强烈的脉冲效果（持续整个时长）
+    for (let i = 0; i < totalDuration / 0.3; i++) {
+      const pulseTime = now + i * 0.3;
+      gainNode.gain.setValueAtTime(0.9, pulseTime);      // 大声
+      gainNode.gain.setValueAtTime(0.4, pulseTime + 0.1); // 小声
+      gainNode.gain.setValueAtTime(0.8, pulseTime + 0.2); // 中等
+    }
+    
+    // 添加频率调制（让声音更动态）
+    let modTime = now;
+    while (modTime < now + totalDuration) {
+      oscillator1.frequency.setValueAtTime(920, modTime);
+      oscillator1.frequency.setValueAtTime(840, modTime + 0.2);
+      oscillator2.frequency.setValueAtTime(1280, modTime);
+      oscillator2.frequency.setValueAtTime(1200, modTime + 0.2);
+      modTime += 0.4;
+    }
+    
+    // 启动所有振荡器
+    oscillator1.start(now);
+    oscillator2.start(now);
+    oscillator3.start(now);
+    
+    // 设置停止时间
+    oscillator1.stop(now + totalDuration);
+    oscillator2.stop(now + totalDuration);
+    oscillator3.stop(now + totalDuration);
+    
+    console.log('播放警报声：', duration + 'ms');
+    
+  } catch (error) {
+    console.log('音频播放失败:', error);
+  }
+}
+// 显示音频提示
+function showAudioPrompt() {
+  setTimeout(() => {
+    if (!isAudioAllowed) {
+      document.getElementById('audioPrompt').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('audioPrompt').style.display = 'none';
+      }, 5000);
+    }
+  }, 2000);
 }
 
 /* -------------- 核心逻辑 -------------- */
@@ -409,10 +487,9 @@ function createTimer(stored = {}) {
       total = 0;
       running = false;
       
-      // 播放提醒音
+      // 播放提醒音 - 这是修复的关键部分！
       try {
-        createBeepSound(800, 1000);
-        setTimeout(() => createBeepSound(1000, 800), 300);
+        playAlarmSound(600000); // 播放600秒警报声
       } catch (e) {
         console.log('音频播放失败:', e);
       }
@@ -497,6 +574,18 @@ function createTimer(stored = {}) {
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
+  // 显示音频提示
+  showAudioPrompt();
+  
+  // 用户交互时初始化音频
+  document.addEventListener('click', function() {
+    if (!isAudioAllowed) {
+      initAudio();
+      document.getElementById('audioPrompt').style.display = 'none';
+      showNotification('音频已启用');
+    }
+  });
+  
   // 加载已保存的计时器
   loadTimers().forEach(createTimer);
   
