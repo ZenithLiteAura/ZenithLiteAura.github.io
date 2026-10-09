@@ -115,6 +115,36 @@ $json = $trim | ConvertTo-Json -Depth 5
 对应的 Pages 构建设置是 **GitHub Actions**（不是分支目录）。如果哪天需要回退成老式分支发布，
 可以在仓库 Settings → Pages 里改回分支模式。
 
+### 另：部署到 Cloudflare Workers（可选）
+
+仓库里的 `wrangler.jsonc` 让同一份构建产物也能发到 Cloudflare：
+
+```jsonc
+{
+  "name": "zenithliteaura-github-io",
+  "compatibility_date": "2026-10-09",
+  "assets": { "directory": "./dist" }   // 纯静态资源，没有 Worker 入口
+}
+```
+
+在 Cloudflare 的 Workers & Pages 里连接本仓库后，Build 设置填：
+
+| 项 | 值 |
+| --- | --- |
+| 构建命令 | `npm run build` |
+| 部署命令 | `npx wrangler deploy` |
+| 预览命令 | **留空**（默认的 `npx wrangler preview` 在 wrangler 4 已废弃，留着会报错） |
+
+本地想验证配置对不对，不用登录 Cloudflare 就能干跑：
+
+```bash
+npm run build
+npx wrangler deploy --dry-run     # 会打印读到了 dist/ 里几个文件
+```
+
+> 注意：`wrangler.jsonc` 的 `assets.directory` 指向 `dist/`，所以**必须先 `npm run build`**
+> 再 `wrangler deploy`，否则会上传一个空的资源目录。
+
 ## 说明
 
 仓库未附加开源许可证，代码与文案版权归 ZenithLiteAura 所有。

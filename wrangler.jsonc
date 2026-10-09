@@ -1,0 +1,15 @@
+{
+  // Cloudflare Workers 静态资源部署配置。
+  //
+  // 本站是纯静态的 Vite 站点：`npm run build` 产出 dist/，
+  // wrangler 直接把 dist/ 当静态资源发布，不需要任何 Worker 代码（因此没有 main 入口）。
+  //
+  // 部署命令：npx wrangler deploy
+  // 若以后加了前端路由，可把 not_found_handling 设为 "single-page-application"。
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "zenithliteaura-github-io",
+  "compatibility_date": "2026-10-09",
+  "assets": {
+    "directory": "./dist"
+  }
+}
