@@ -115,11 +115,6 @@ $json = $trim | ConvertTo-Json -Depth 5
 对应的 Pages 构建设置是 **GitHub Actions**（不是分支目录）。如果哪天需要回退成老式分支发布，
 可以在仓库 Settings → Pages 里改回分支模式。
 
-## 归档说明
-
-改造之前这个仓库放的是一个「计时器」单页应用。原始文件完整保存在
-`archive/timer-app` 分支（提交 `24d52226`）中，随时可以取回。
-
 ## 说明
 
 仓库未附加开源许可证，代码与文案版权归 ZenithLiteAura 所有。
