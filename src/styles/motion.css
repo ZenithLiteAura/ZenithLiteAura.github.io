@@ -1,0 +1,48 @@
+/* ===================================================================
+   动效层：入场、弹簧反馈、以及「减少动态效果」的全局降级。
+   =================================================================== */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 入场：分层上浮，--i 为序号，由 TS 内联设置 */
+.enter {
+  animation: rise 0.5s var(--ease-enter) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* 头像轻微过冲，呼应 MIUIX 的弹簧观感 */
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero__avatar {
+  animation: pop 0.52s var(--ease-enter) both;
+  animation-delay: 40ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

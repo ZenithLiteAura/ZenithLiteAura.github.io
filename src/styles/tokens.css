@@ -1,0 +1,82 @@
+/* ===================================================================
+   MIUIX / HyperOS 设计令牌
+   取值与本机已有的 MIUIX 组件实现（miuix-popup-demo）保持一致，
+   确保同一套视觉语言：浅灰底 + 纯白卡片 + #3482ff 主色 + 玻璃 + 弹簧动效。
+   =================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --font-sans: 'MiSans', 'HarmonyOS Sans SC', 'PingFang SC', -apple-system,
+    BlinkMacSystemFont, 'SF Pro Text', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
+
+  /* 表面 */
+  --bg: #f5f5f7;
+  --card: #ffffff;
+  --surface-container: #f0f0f2;
+  --glass: rgba(255, 255, 255, 0.78);
+  --glass-edge: rgba(255, 255, 255, 0.85);
+  --dim: rgba(0, 0, 0, 0.16);
+
+  /* 强调色 */
+  --primary: #3482ff;
+  --primary-strong: #2668d9;
+  --on-primary: #ffffff;
+
+  /* 文本 */
+  --text: #000000;
+  --text-2: rgba(0, 0, 0, 0.6);
+  --text-3: rgba(0, 0, 0, 0.36);
+
+  /* 线 / 按压 */
+  --line: rgba(0, 0, 0, 0.07);
+  --press: rgba(0, 0, 0, 0.05);
+
+  /* 阴影 */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-float: 0 12px 32px -8px rgba(0, 0, 0, 0.22), 0 2px 10px rgba(0, 0, 0, 0.08);
+
+  /* 圆角 */
+  --r-card: 20px;
+  --r-dialog: 26px;
+  --r-btn: 14px;
+  --r-chip: 999px;
+
+  /* 动效：近似 spring(0.78, 232) 的轻过冲与 spring(0.78, 400) 的干脆 */
+  --ease-enter: cubic-bezier(0.22, 1.12, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 1, 0.6, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 0.16s;
+  --dur-base: 0.26s;
+  --dur-slow: 0.38s;
+
+  /* 玻璃 */
+  --blur: 22px;
+  --sat: 170%;
+
+  --page-max: 680px;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #000000;
+  --card: #1c1c1e;
+  --surface-container: #2c2c2e;
+  --glass: rgba(40, 40, 44, 0.72);
+  --glass-edge: rgba(255, 255, 255, 0.1);
+  --dim: rgba(0, 0, 0, 0.48);
+
+  --primary: #4c94ff;
+  --primary-strong: #6ba7ff;
+
+  --text: #ffffff;
+  --text-2: rgba(255, 255, 255, 0.6);
+  --text-3: rgba(255, 255, 255, 0.34);
+
+  --line: rgba(255, 255, 255, 0.09);
+  --press: rgba(255, 255, 255, 0.07);
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-float: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 2px 12px rgba(0, 0, 0, 0.4);
+}

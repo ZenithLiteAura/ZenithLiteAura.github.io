@@ -1,0 +1,657 @@
+/* ===================================================================
+   组件层：全部基于 tokens.css 的令牌，写法对齐 MIUIX 组件示例。
+   =================================================================== */
+
+/* ---------------- 顶栏：大标题 + 玻璃化 ---------------- */
+
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 10px;
+}
+
+/* 只有滚动后才有玻璃底与分割线，静止时完全透出页面底色 */
+.appbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  -webkit-backdrop-filter: blur(0) saturate(100%);
+  backdrop-filter: blur(0) saturate(100%);
+  box-shadow: 0 1px 0 transparent;
+  transition: background var(--dur-base) var(--ease-standard),
+    box-shadow var(--dur-base) var(--ease-standard),
+    backdrop-filter var(--dur-base) var(--ease-standard);
+  pointer-events: none;
+}
+
+.appbar[data-scrolled='true']::before {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.appbar__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(var(--page-max) - 32px);
+  margin: 0 auto;
+}
+
+.appbar__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.appbar__name {
+  display: block;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  transition: font-size var(--dur-base) var(--ease-standard);
+}
+
+.appbar[data-scrolled='true'] .appbar__name {
+  font-size: 17px;
+}
+
+.appbar__sub {
+  display: block;
+  margin-top: 3px;
+  max-height: 22px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  overflow: hidden;
+  transition: opacity var(--dur-fast) var(--ease-standard),
+    max-height var(--dur-base) var(--ease-standard), margin var(--dur-base) var(--ease-standard);
+}
+
+.appbar[data-scrolled='true'] .appbar__sub {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+}
+
+.appbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+/* ---------------- 胶囊分段控件（MIUIX segmented） ---------------- */
+
+.segmented {
+  --seg-btn-w: 46px;
+  --seg-count: 2;
+  --seg-index: 0;
+  position: relative;
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--r-chip);
+  background: var(--press);
+}
+
+.segmented--icon {
+  --seg-btn-w: 38px;
+}
+
+.segmented__thumb {
+  position: absolute;
+  z-index: 0;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / var(--seg-count));
+  border-radius: var(--r-chip);
+  background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.04);
+  transform: translateX(calc(var(--seg-index) * 100%));
+  transition: transform var(--dur-slow) var(--ease-enter);
+}
+
+.segmented__btn {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: var(--seg-btn-w);
+  height: 30px;
+  border-radius: var(--r-chip);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color var(--dur-fast) var(--ease-standard);
+}
+
+.segmented__btn[aria-pressed='true'] {
+  color: var(--text);
+}
+
+.segmented__btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ---------------- 卡片 / 分组 ---------------- */
+
+.card {
+  background: var(--card);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.card--pad {
+  padding: 16px;
+}
+
+/* ---------------- 列表行（MIUIX BasicComponent 行） ---------------- */
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  color: inherit;
+}
+
+a.row {
+  transition: background var(--dur-fast) var(--ease-standard);
+}
+
+a.row:hover,
+a.row:active {
+  background: var(--press);
+}
+
+.row + .row::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.row__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.row__t {
+  display: block;
+  font-size: 15.5px;
+}
+
+.row__s {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row__chev {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--text-3);
+  transition: transform var(--dur-fast) var(--ease-standard);
+}
+
+a.row:hover .row__chev {
+  transform: translateX(2px);
+  color: var(--primary);
+}
+
+.row--todo .row__s {
+  color: var(--text-2);
+}
+
+/* ---------------- Hero ---------------- */
+
+.hero {
+  padding: 20px 18px 16px;
+}
+
+.hero__top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hero__avatar {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  border-radius: 22px;
+  background: var(--surface-container);
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hero__id {
+  min-width: 0;
+}
+
+.hero__name {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.hero__alias {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.hero__headline {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: var(--r-chip);
+  background: var(--surface-container);
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.badge b {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ---------------- 标签 ---------------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r-chip);
+  background: var(--surface-container);
+  color: var(--text-2);
+  font-size: 12.5px;
+  transition: background var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-enter);
+}
+
+a.chip:hover {
+  background: var(--press);
+  color: var(--text);
+}
+
+a.chip:active {
+  transform: scale(0.95);
+}
+
+/* ---------------- 关于 / 技能 ---------------- */
+
+.about__text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-2);
+}
+
+.todo-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.todo-line .todo {
+  margin-left: 0;
+  flex: 0 0 auto;
+}
+
+.view-all {
+  margin-top: 10px;
+}
+
+/* ---------------- 项目卡片 ---------------- */
+
+.project {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--card);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: transform var(--dur-fast) var(--ease-enter),
+    box-shadow var(--dur-base) var(--ease-standard);
+}
+
+.project:hover {
+  box-shadow: var(--shadow-float);
+}
+
+.project:active {
+  transform: scale(0.985);
+}
+
+.project__inner {
+  display: block;
+  padding: 15px 16px 14px;
+}
+
+.project__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 15.5px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project__desc {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.project__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.project__meta .dot {
+  margin-right: 0;
+}
+
+.dot {
+  display: inline-block;
+  vertical-align: middle;
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--dot, var(--text-3));
+}
+
+.project__lang,
+.project__star {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.project__star {
+  gap: 4px;
+}
+
+.project__ico {
+  width: 13px;
+  height: 13px;
+  color: var(--text-3);
+}
+
+.project__chev {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--text-3);
+}
+
+/* ---------------- 按钮 ---------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: var(--r-btn);
+  font-size: 15px;
+  font-weight: 500;
+  transition: transform var(--dur-fast) var(--ease-enter),
+    background var(--dur-fast) var(--ease-standard), opacity var(--dur-fast);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.btn--primary {
+  flex: 1;
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn--primary:hover {
+  background: var(--primary-strong);
+}
+
+.btn--ghost {
+  background: var(--press);
+  color: var(--text);
+}
+
+/* ---------------- Sheet：MIUIX OverlayDialog 风格 ---------------- */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--dim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-standard);
+}
+
+.scrim[data-open='true'] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sheet {
+  position: fixed;
+  z-index: 61;
+  left: 50%;
+  top: 50%;
+  width: min(380px, 88vw);
+  max-height: 84vh;
+  overflow: auto;
+  padding: 22px 20px 16px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  border-radius: var(--r-dialog);
+  box-shadow: var(--shadow-float), inset 0 0 0 1px var(--glass-edge);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.92);
+  transition: opacity var(--dur-base) var(--ease-exit), transform var(--dur-base) var(--ease-exit),
+    visibility 0s linear var(--dur-base);
+}
+
+.sheet[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+  transition: opacity var(--dur-base) var(--ease-standard),
+    transform var(--dur-slow) var(--ease-enter), visibility 0s;
+}
+
+.sheet__title {
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.sheet__name {
+  margin-top: 6px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-2);
+  word-break: break-all;
+}
+
+.sheet__desc {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-btn);
+  background: var(--press);
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.sheet__meta {
+  margin-top: 14px;
+}
+
+.sheet__meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  font-size: 13.5px;
+}
+
+.sheet__meta-row + .sheet__meta-row {
+  border-top: 1px solid var(--line);
+}
+
+.sheet__meta-k {
+  flex: 0 0 auto;
+  color: var(--text-2);
+}
+
+.sheet__meta-v {
+  flex: 1;
+  text-align: right;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sheet__acts {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.sheet__acts .btn--ghost {
+  flex: 0 0 auto;
+}
+
+/* ---------------- TODO 标记 ---------------- */
+
+.todo {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.5px 7px;
+  margin-left: 6px;
+  border-radius: var(--r-chip);
+  background: rgba(255, 159, 10, 0.16);
+  color: #8a4a00;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+[data-theme='dark'] .todo {
+  background: rgba(255, 159, 10, 0.2);
+  color: #ffc061;
+}
+
+/* ---------------- 页脚 ---------------- */
+
+.footer {
+  margin-top: 34px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-2);
+  line-height: 1.9;
+}
+
+.footer a {
+  color: var(--text-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer a:hover {
+  color: var(--primary);
+}
+
+/* ---------------- 窄屏 ---------------- */
+
+@media (max-width: 430px) {
+  .appbar__name {
+    font-size: 22px;
+  }
+
+  .appbar__actions {
+    gap: 6px;
+  }
+
+  .hero__avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 19px;
+  }
+
+  .hero__name {
+    font-size: 19px;
+  }
+}
