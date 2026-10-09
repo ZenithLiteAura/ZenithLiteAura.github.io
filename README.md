@@ -132,14 +132,20 @@ $json = $trim | ConvertTo-Json -Depth 5
 | 项 | 值 |
 | --- | --- |
 | 构建命令 | `npm run build` |
-| 部署命令 | `npx wrangler deploy` |
-| 预览命令 | **留空**（默认的 `npx wrangler preview` 在 wrangler 4 已废弃，留着会报错） |
+| 部署命令（生产分支） | `npx wrangler deploy` |
+| 预览命令（非生产分支） | `npx wrangler versions upload` |
+
+三个字段都是必填的（构建命令虽然标着"可选"，但留空就无法进入下一步）。
+
+> `npx wrangler preview` 不要填：那是 wrangler 4 里另一套功能（Worker Previews，目前 open beta），
+> 不是这里要用的「非生产分支上传版本」命令。
 
 本地想验证配置对不对，不用登录 Cloudflare 就能干跑：
 
 ```bash
 npm run build
-npx wrangler deploy --dry-run     # 会打印读到了 dist/ 里几个文件
+npx wrangler deploy --dry-run          # 生产：会打印读到了 dist/ 里几个文件
+npx wrangler versions upload --dry-run # 预览：校验配置能解析
 ```
 
 > 注意：`wrangler.jsonc` 的 `assets.directory` 指向 `dist/`，所以**必须先 `npm run build`**
