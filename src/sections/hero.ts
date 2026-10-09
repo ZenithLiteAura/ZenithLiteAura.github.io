@@ -25,10 +25,6 @@ export function renderHero(): HTMLElement {
         }),
         h('div', { class: 'hero__id' }, [
           h('h1', { class: 'hero__name', text: profile.login }),
-          h('div', {
-            class: 'hero__alias',
-            text: `${d['hero.aliasPrefix']} ${profile.alias}`,
-          }),
         ]),
       ]),
       h('div', { class: 'hero__badges' }, [

@@ -42,6 +42,7 @@ src/
   config.ts                 SHOW_TODO_MARKERS 开关
   dom.ts                    极简 DOM 构建工具（不用 innerHTML 拼字符串）
   data/profile.ts           个人资料（要改内容主要改这里）
+  data/curated.ts           手写的项目介绍 + 不上首页的仓库名单
   data/projects.ts          仓库快照 → 项目卡片数据
   data/repos.snapshot.json  GitHub 公开仓库快照（本仓库的数据源）
   i18n/{zh,en,types,index}.ts  中英文案字典
@@ -55,24 +56,28 @@ public/                     头像、favicon、robots.txt
 
 | 想改什么 | 改哪里 |
 | --- | --- |
-| 称呼、别名、签名、自我介绍、技能、联系方式 | `src/data/profile.ts` |
-| 项目列表 | `src/data/repos.snapshot.json` |
+| 显示名、签名、自我介绍、技能、联系方式 | `src/data/profile.ts` |
+| 项目卡片上的文字介绍 | `src/data/curated.ts`（`curatedDescriptions`） |
+| 哪些仓库不上首页 | `src/data/curated.ts`（`hiddenRepos`） |
+| 仓库列表与 Star 数 | `src/data/repos.snapshot.json` |
 | 任意界面文案（中/英） | `src/i18n/zh.ts` 与 `src/i18n/en.ts`（键必须一一对应，否则类型检查会报错） |
 | 配色、圆角、动效曲线 | `src/styles/tokens.css` |
 
-### 待办：需要你补的真实资料
+### 内容现状
 
-页面上目前带橙色 `TODO` 标记的地方，都是「先用 GitHub 现成资料占位、等你替换」的内容：
+页面上的资料都已写成真实内容，没有待办占位：
 
-1. **别名**：GitHub 用户名是 `ZenithLiteAura`，提交记录署名是 `Nahida` —— 决定主页显示哪个。
-2. **一句话签名**（`profile.headline`）与**自我介绍**（`profile.bio`）：现在是占位文案。
-3. **技能与工具**（`profile.skills`）：现在是示例值（Dart / Flutter / TypeScript / C#），请换成你真实在用的。
-4. **联系方式**（`profile.contacts`）：GitHub 链接已确认；邮箱 / QQ / 哔哩哔哩留空。
-   **邮箱默认不公开**，需要公开时再填 `value` 与 `href` 并把 `todo` 改成 `false`。
-5. **项目描述**：`cuddly-guide` 在 GitHub 上没有填描述，页面上显示为待补充。
-6. **英文文案**：仓库描述目前只有中文，切到英文时原样回落，需要时请补英文。
+- 显示名 `ZenithLiteAura`；签名与自我介绍写在 `profile.headline` / `profile.bio`
+- 技能目前只列了 `Python`，想加别的往 `profile.skills` 数组里加字符串即可
+- 联系方式有 GitHub 与邮箱两个（邮箱走 `mailto:`，不会新开窗口）
+- 项目卡片只展示 `Pho_Community`。`cuddly-guide` 是建仓库时自动生成的空占位
+  （只有一个 LICENSE 和 14 字节的 README），已列入 `hiddenRepos` 不上首页；
+  哪天它真有内容了，把名字从 `hiddenRepos` 里删掉就会自动出现
+- 首页由 `profile.ts` 与 `curated.ts` 提供文案，因此不再依赖 GitHub 上的仓库描述；
+  想改首页说法不必去动 GitHub 仓库设置
 
-全部替换完，把 `src/config.ts` 里的 `SHOW_TODO_MARKERS` 改成 `false`，页面上所有 `TODO` 标记会一起消失。
+`src/config.ts` 里的 `SHOW_TODO_MARKERS` 现在是 `false`。以后新增了还没写描述的仓库，
+把它改成 `true` 就能把「待补充」提示显示出来，方便提醒自己补文案。
 
 ## 刷新 GitHub 数据
 

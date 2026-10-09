@@ -13,18 +13,30 @@ export function renderContact(): HTMLElement {
     const label = d[contact.labelKey as DictKey]
 
     if (contact.value && contact.href) {
-      card.append(h('a', {
-        class: 'row',
-        href: contact.href,
-        target: '_blank',
-        rel: 'noopener noreferrer',
-      }, [
+      // 只有 http(s) 链接才是新窗口外链；mailto 之类的就地打开，不加箭头图标
+      const isExternal = contact.href.startsWith('http')
+      const content: (Node | string)[] = [
         h('span', { class: 'row__text' }, [
           h('span', { class: 'row__t', text: label }),
           h('span', { class: 'row__s', text: contact.value }),
         ]),
-        externalIcon(),
-      ]))
+      ]
+      if (isExternal) content.push(externalIcon())
+
+      card.append(
+        h(
+          'a',
+          isExternal
+            ? {
+                class: 'row',
+                href: contact.href,
+                target: '_blank',
+                rel: 'noopener noreferrer',
+              }
+            : { class: 'row', href: contact.href },
+          content,
+        ),
+      )
       continue
     }
 

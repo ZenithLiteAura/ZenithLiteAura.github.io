@@ -1,5 +1,5 @@
 import { profile } from '../data/profile'
-import { formatMonth, forkedRepos, languageColor, ownProjects, publicRepoCount } from '../data/projects'
+import { formatMonth, languageColor, ownProjects, publicRepoCount } from '../data/projects'
 import { ICON, h, svgIcon } from '../dom'
 import { dict, t } from '../i18n'
 import { state } from '../store'
@@ -96,32 +96,5 @@ export function renderProjects(): HTMLElement {
     h('h2', { class: 'group-title', text: d['section.projects'] }),
     stack,
     viewAll,
-  ])
-}
-
-export function renderForks(): HTMLElement {
-  const d = dict(state.lang)
-  const chips = h('div', { class: 'chips' })
-  for (const repo of forkedRepos) {
-    chips.append(h('a', {
-      class: 'chip',
-      href: repo.url,
-      target: '_blank',
-      rel: 'noopener noreferrer',
-      title: `${repo.name} — ${d['a11y.external']}`,
-    }, [
-      repo.language
-        ? h('span', { class: 'dot', style: `--dot:${languageColor(repo.language)}` })
-        : h('span', { class: 'dot' }),
-      h('span', { text: repo.name }),
-    ]))
-  }
-
-  return h('section', { class: 'section' }, [
-    h('h2', { class: 'group-title', text: d['section.forks'] }),
-    h('div', { class: 'card card--pad' }, [
-      chips,
-      h('p', { class: 'muted', style: 'margin-top:12px', text: d['forks.hint'] }),
-    ]),
   ])
 }

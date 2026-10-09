@@ -10,13 +10,11 @@ export const en: Dict = {
   'a11y.theme': 'Switch theme',
   'a11y.openDetail': 'View project details',
   'a11y.close': 'Close',
-  'a11y.external': 'Opens in a new tab',
 
   'theme.light': 'Light',
   'theme.dark': 'Dark',
   'theme.system': 'System',
 
-  'hero.aliasPrefix': 'aka',
   'hero.badge.repos': 'public repos',
   'hero.badge.joined': 'joined',
   'hero.badge.followers': 'followers',
@@ -26,10 +24,7 @@ export const en: Dict = {
   'section.about': 'About',
   'section.skills': 'Skills & tools',
   'section.projects': 'Projects',
-  'section.forks': 'Repos I forked',
   'section.contact': 'Get in touch',
-
-  'skills.hint': 'To fill in: replace with the stack you actually use.',
 
   'projects.todo': 'Repository description to be added',
   'projects.stars': 'stars',
@@ -37,8 +32,6 @@ export const en: Dict = {
   'projects.archived': 'archived',
   'projects.viewAll': 'View all {n} repositories on GitHub',
   'projects.empty': 'No project data yet.',
-
-  'forks.hint': 'These are repositories you forked — click to open them on GitHub.',
 
   'detail.title': 'Project details',
   'detail.language': 'Language',
@@ -50,8 +43,6 @@ export const en: Dict = {
 
   'contact.github': 'GitHub',
   'contact.email': 'Email',
-  'contact.qq': 'QQ',
-  'contact.bilibili': 'Bilibili',
   'contact.pending': 'To be added',
 
   'footer.built': 'MIUIX-style · hand-written CSS · no framework',

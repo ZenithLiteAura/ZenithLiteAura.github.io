@@ -2,7 +2,6 @@ import { profile } from '../data/profile'
 import { h } from '../dom'
 import { dict } from '../i18n'
 import { state } from '../store'
-import { todoBadge } from './shared'
 
 export function renderAbout(): HTMLElement {
   const d = dict(state.lang)
@@ -21,14 +20,8 @@ export function renderSkills(): HTMLElement {
     chips.append(h('span', { class: 'chip', text: skill }))
   }
 
-  const children: (Node | string)[] = [chips]
-  const hint = todoBadge()
-  if (hint) {
-    children.push(h('p', { class: 'muted todo-line' }, [hint, h('span', { text: d['skills.hint'] })]))
-  }
-
   return h('section', { class: 'section' }, [
     h('h2', { class: 'group-title', text: d['section.skills'] }),
-    h('div', { class: 'card card--pad' }, children),
+    h('div', { class: 'card card--pad' }, [chips]),
   ])
 }

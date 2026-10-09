@@ -3,7 +3,7 @@ import { renderAbout, renderSkills } from './sections/about'
 import { renderAppBar } from './sections/appbar'
 import { renderContact, renderFooter } from './sections/contact'
 import { renderHero } from './sections/hero'
-import { renderForks, renderProjects } from './sections/projects'
+import { renderProjects } from './sections/projects'
 
 /**
  * 组装整页。
@@ -19,7 +19,6 @@ export function renderApp(root: HTMLElement, animate: boolean): void {
     renderAbout(),
     renderSkills(),
     renderProjects(),
-    renderForks(),
     renderContact(),
     renderFooter(),
   ]

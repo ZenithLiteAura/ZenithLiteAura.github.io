@@ -1,6 +1,7 @@
 import snapshot from './repos.snapshot.json'
 import type { Lang, Project, RepoSnapshot } from '../types'
 import { profile } from './profile'
+import { curatedDescriptions, hiddenRepos } from './curated'
 
 /**
  * 数据来源：GitHub REST API 的公开仓库快照（已剔除 private 仓库）。
@@ -47,33 +48,32 @@ export function formatMonth(iso: string, lang: Lang): string {
 }
 
 function toProject(repo: RepoSnapshot): Project {
+  // 手写描述优先；没有就回落到 GitHub 上的仓库简述（中英同一份原文）
+  const curated = curatedDescriptions[repo.name]
+  const fallback = repo.description ?? ''
   return {
     name: repo.name,
-    // TODO(user)：描述直接取自 GitHub；英文文案仍需你补，这里暂时回落到原文。
-    description: { zh: repo.description ?? '', en: repo.description ?? '' },
+    description: curated ?? { zh: fallback, en: fallback },
     url: repo.html_url,
     homepage: repo.homepage,
     language: repo.language,
     stars: repo.stargazers_count,
     updated: repo.pushed_at,
     archived: repo.archived,
-    needsDescription: !repo.description,
+    needsDescription: !curated && !fallback,
   }
 }
 
-/** 本人仓库（不含站点自身），已按星标与更新时间排序。 */
+/**
+ * 本人仓库，已按星标与更新时间排序。
+ * 排除：Fork 的仓库、站点自身所在仓库、以及 curated.ts 里声明为占位空仓库的仓库。
+ */
 export const ownProjects: Project[] = repos
-  .filter((repo) => !repo.fork && repo.name !== SITE_REPO)
+  .filter(
+    (repo) =>
+      !repo.fork && repo.name !== SITE_REPO && !hiddenRepos.includes(repo.name),
+  )
   .map(toProject)
-
-/** Fork 的仓库，用标签云展示。 */
-export const forkedRepos = repos
-  .filter((repo) => repo.fork)
-  .map((repo) => ({
-    name: repo.name,
-    url: repo.html_url,
-    language: repo.language,
-  }))
 
 /** 公开仓库总数（与 GitHub 个人页数字一致）。 */
 export const publicRepoCount = repos.length

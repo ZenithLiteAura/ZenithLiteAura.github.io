@@ -7,13 +7,11 @@ export const zh = {
   'a11y.theme': '切换主题',
   'a11y.openDetail': '查看项目详情',
   'a11y.close': '关闭',
-  'a11y.external': '在新标签页打开',
 
   'theme.light': '浅色',
   'theme.dark': '深色',
   'theme.system': '跟随系统',
 
-  'hero.aliasPrefix': '亦称',
   'hero.badge.repos': '公开仓库',
   'hero.badge.joined': '加入于',
   'hero.badge.followers': '关注者',
@@ -22,10 +20,7 @@ export const zh = {
   'section.about': '关于',
   'section.skills': '技能与工具',
   'section.projects': '项目',
-  'section.forks': '我 Fork 的仓库',
   'section.contact': '联系我',
-
-  'skills.hint': '待补充：请替换成你真实使用的技术栈。',
 
   'projects.todo': '待补充仓库描述',
   'projects.stars': '星标',
@@ -33,8 +28,6 @@ export const zh = {
   'projects.archived': '已归档',
   'projects.viewAll': '在 GitHub 查看全部 {n} 个仓库',
   'projects.empty': '暂无项目数据。',
-
-  'forks.hint': '这些是你 Fork 的仓库，点击可在 GitHub 打开。',
 
   'detail.title': '项目详情',
   'detail.language': '语言',
@@ -46,8 +39,6 @@ export const zh = {
 
   'contact.github': 'GitHub',
   'contact.email': '电子邮箱',
-  'contact.qq': 'QQ',
-  'contact.bilibili': '哔哩哔哩',
   'contact.pending': '待补充',
 
   'footer.built': 'MIUIX 风格 · 手写 CSS · 无前端框架',
