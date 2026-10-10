@@ -5,6 +5,7 @@ import './styles/motion.css'
 
 import { renderApp } from './app'
 import { dict } from './i18n'
+import { syncAppBarScroll } from './sections/appbar'
 import { initSheet, rerenderSheet } from './sections/sheet'
 import { applyTheme, state, subscribe } from './store'
 
@@ -21,13 +22,6 @@ initSheet()
 applyTheme()
 document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en'
 
-/** 滚动超过一点点就把顶栏玻璃化并收起大标题（MIUIX 大标题折叠）。 */
-function syncScrollState(): void {
-  document
-    .getElementById('appbar')
-    ?.setAttribute('data-scrolled', window.scrollY > 8 ? 'true' : 'false')
-}
-
 let firstRender = true
 
 function render(): void {
@@ -42,10 +36,10 @@ function render(): void {
   firstRender = false
 
   rerenderSheet()
-  syncScrollState()
+  syncAppBarScroll()
 }
 
 subscribe(render)
 render()
 
-window.addEventListener('scroll', syncScrollState, { passive: true })
+window.addEventListener('scroll', syncAppBarScroll, { passive: true })

@@ -34,9 +34,10 @@ npm run typecheck # 只做类型检查
 ## 目录结构
 
 ```
-index.html                  Vite 入口（含防主题闪烁的内联脚本）
+index.html                  Vite 入口（主页面，含防主题闪烁的内联脚本）
+verify/index.html           Vite 入口（/verify/ 验证码对比页）
 src/
-  main.ts                   挂载与全局重渲染
+  main.ts                   主页面挂载与全局重渲染
   app.ts                    整页组装
   store.ts                  语言/主题状态 + localStorage 持久化
   config.ts                 SHOW_TODO_MARKERS 开关
@@ -48,7 +49,11 @@ src/
   i18n/{zh,en,types,index}.ts  中英文案字典
   sections/*.ts             顶栏、Hero、关于、项目、联系、页脚、详情弹层
   styles/{tokens,base,components,motion}.css  MIUIX 令牌与样式
+  verify/                   /verify/ 页：layout、driftcha、cap、cap-api、cap-shared
+dev/cap-dev-server.ts       仅开发期的 Cap 后端（Vite 中间件，复用同一个 handler）
+worker/index.ts             Cloudflare Worker 入口（线上提供 /verify/cap/*）
 public/                     头像、favicon、robots.txt
+.npmrc                      放行本项目自己的 remote 依赖（driftcha 的 tarball），CI 必需
 .github/workflows/deploy.yml 构建并发布到 GitHub Pages
 ```
 
@@ -150,6 +155,63 @@ npx wrangler versions upload --dry-run # 预览：校验配置能解析
 
 > 注意：`wrangler.jsonc` 的 `assets.directory` 指向 `dist/`，所以**必须先 `npm run build`**
 > 再 `wrangler deploy`，否则会上传一个空的资源目录。
+
+## `/verify/` 验证码对比页
+
+`/verify/` 是第二个页面（多页构建的第二个入口），在同一个页面上同时挂两个验证码方案，用来比较：
+
+<https://zenithliteaura.github.io/verify/>
+
+| 维度 | Driftcha | Cap |
+| --- | --- | --- |
+| 原理 | 运动噪点：数字只在运动中显现 | 隐形工作量证明 + 浏览器插桩 |
+| 无服务端可用 | ✅ 官方浏览器模式 | ❌ 必须有后端 |
+| 本站落地 | GitHub Pages 直接可用 | Cloudflare Worker（`capjs-core`）或自建 Standalone |
+| Workers 兼容 | ❌（服务端是 Node 中间件） | ✅ 官方提供 Workers 示例 |
+| 无障碍 | ❌ 依赖运动视觉 | ✅ 无视觉谜题 |
+| 中国可达性 | ✅ 无外部 CDN 依赖 | ⚠️ WASM 默认走 jsdelivr，可自托管 |
+| 成熟度 | 0 star（2026-10 新建） | 约 7,900 star，有生产使用者 |
+| 安装 | 未发布 npm，按 commit 固定 tarball | 普通 npm 包 |
+
+### 两个方案的运行方式
+
+- **Driftcha** 用 `createLocalBackend`（浏览器模式），全部计算在页面内完成，
+  **不产生 pass token、不构成真实防护**——上游自述是「速度障碍，而不是防御」。
+  它依赖运动视觉，屏幕阅读器/低视力用户无法完成，页面上因此固定给出邮件替代入口；
+  并且在 `prefers-reduced-motion: reduce` 时**不自动加载**，改为点按钮后加载。
+- **Cap** 需要后端。页面会先 POST 一次 `/verify/cap/challenge` 探测：
+  - 探测成功 → 挂上 `<cap-widget>`，解题后由服务端签发 token；
+  - 探测失败（GitHub Pages 是纯静态托管）→ 显示「Cap 需要一个后端」提示，
+    而不是渲染一个永远报错的控件。静态托管下这次探测会产生一条 404 网络日志，属预期。
+
+### Cap 后端在哪
+
+同一份 handler（`src/verify/cap-api.ts`）挂了两个宿主：
+
+| 环境 | 宿主 | 说明 |
+| --- | --- | --- |
+| 本地 `npm run dev` | Vite dev-server 中间件（`dev/cap-dev-server.ts`） | 零云资源即可端到端跑通；密钥取 `.dev.vars`，没有则用仅限本机的兜底值 |
+| 线上 | Cloudflare Worker（`worker/index.ts`） | 只处理 `/verify/cap/*`，其余交给静态资源；需要 `nodejs_compat` |
+
+线上配置步骤：
+
+```bash
+npx wrangler secret put CAP_SECRET     # 至少 16 字节的高熵随机串
+# 可选：防重放（不配也能跑，只是没有重放保护）
+npx wrangler kv namespace create NONCES
+#   然后把返回的 id 填进 wrangler.jsonc 里被注释掉的 kv_namespaces
+```
+
+本地想用固定密钥，就把 `.dev.vars.example` 复制成 `.dev.vars`（已被 gitignore）。
+
+### 关于依赖的两个坑
+
+1. **driftcha 未发布到 npm**，只能从 GitHub 取。这里用的是**按 commit 固定的 tarball URL**
+   而不是 `github:` 简写：`github:` 会被 npm 写成 `git+ssh://`，GitHub Actions 没有 SSH 私钥，
+   `npm ci` 必然失败；tarball 走 HTTPS，既不需要 git 也不需要 SSH。
+2. **npm 12 起默认拒绝一切非 registry 来源**（`allow-remote=none` / `allow-git=none`），
+   所以仓库根有 `.npmrc` 写着 `allow-remote=root`：只放行本项目自己声明的 remote 依赖，
+   传递依赖引入的 remote 包仍被拒绝。**删掉这个文件 CI 会装不上依赖。**
 
 ## 说明
 

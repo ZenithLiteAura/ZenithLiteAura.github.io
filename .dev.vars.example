@@ -1,0 +1,6 @@
+# 复制成 .dev.vars 后，npm run dev 就会使用你自己的密钥来跑 Cap 后端。
+# .dev.vars 已被 .gitignore 忽略，不会进仓库；线上用 wrangler secret put CAP_SECRET 设置。
+#
+# 要求：至少 16 字节的高熵随机串。生成示例：
+#   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+CAP_SECRET=replace-with-a-long-random-string

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>验证码演示 · ZenithLiteAura</title>
+    <meta
+      name="description"
+      content="Driftcha 与 Cap 两种验证码方案的对比与现场演示。"
+    />
+    <!-- 自测页，不进搜索引擎 -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href="https://zenithliteaura.github.io/verify/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/avatar.jpg" />
+    <script>
+      // 在首屏绘制前套用已保存的主题，避免浅/深色闪烁（FOUC）。
+      (function () {
+        try {
+          var pref = localStorage.getItem('zla:theme') || 'system'
+          var dark =
+            pref === 'dark' ||
+            (pref === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+        } catch (e) {
+          /* 隐私模式下 localStorage 不可用，忽略即可 */
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <noscript>
+      <div class="noscript">
+        <h1>验证码演示 / CAPTCHA demo</h1>
+        <p>
+          本页的两个验证码都依赖 JavaScript。<br />
+          Both CAPTCHAs on this page need JavaScript.
+        </p>
+        <p><a href="/">返回主页 / Back to home</a></p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/verify/main.ts"></script>
+  </body>
+</html>

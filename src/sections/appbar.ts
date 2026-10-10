@@ -14,7 +14,11 @@ const THEME_ICONS: Record<ThemePref, string> = {
   system: ICON.auto,
 }
 
-export function renderAppBar(): HTMLElement {
+/**
+ * 通用顶栏：大标题 + 副标题 + 语言/主题开关。
+ * 主页与 /verify/ 共用，避免两处各写一份。
+ */
+export function renderTopBar(title: string, subtitle: string): HTMLElement {
   const d = dict(state.lang)
 
   const langSwitch = segmented({
@@ -49,10 +53,22 @@ export function renderAppBar(): HTMLElement {
   return h('header', { class: 'appbar', id: 'appbar' }, [
     h('div', { class: 'appbar__inner' }, [
       h('div', { class: 'appbar__title' }, [
-        h('span', { class: 'appbar__name', text: profile.login }),
-        h('span', { class: 'appbar__sub', text: profile.headline[state.lang] }),
+        h('span', { class: 'appbar__name', text: title }),
+        h('span', { class: 'appbar__sub', text: subtitle }),
       ]),
       h('div', { class: 'appbar__actions' }, [langSwitch, themeSwitch]),
     ]),
   ])
+}
+
+/** 主页顶栏。 */
+export function renderAppBar(): HTMLElement {
+  return renderTopBar(profile.login, profile.headline[state.lang])
+}
+
+/** 滚动后把顶栏玻璃化并收起大标题。 */
+export function syncAppBarScroll(): void {
+  document
+    .getElementById('appbar')
+    ?.setAttribute('data-scrolled', window.scrollY > 8 ? 'true' : 'false')
 }

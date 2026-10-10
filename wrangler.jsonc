@@ -1,15 +1,24 @@
 {
-  // Cloudflare Workers 静态资源部署配置。
+  // Cloudflare Workers 配置：同一个项目既发布静态站点，也提供 Cap 验证码的后端。
   //
-  // 本站是纯静态的 Vite 站点：`npm run build` 产出 dist/，
-  // wrangler 直接把 dist/ 当静态资源发布，不需要任何 Worker 代码（因此没有 main 入口）。
+  // - assets：npm run build 产出的 dist/（主页面 + /verify/ 对比页）
+  // - main：Worker 入口，只处理 /verify/cap/*（challenge 与 redeem），
+  //         未命中静态资源的其它路径由它返回 404
+  // - nodejs_compat：capjs-core 内部使用 node:crypto 与 node:zlib（instrumentation 的
+  //   deflate），在 Workers 上必须开启这个兼容标志
   //
-  // 部署命令：npx wrangler deploy
-  // 若以后加了前端路由，可把 not_found_handling 设为 "single-page-application"。
+  // 部署：npx wrangler deploy
+  // 密钥：npx wrangler secret put CAP_SECRET   ← 不要写进本文件
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "zenithliteaura-github-io",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-09",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist"
   }
+  // 可选：防重放需要 KV 命名空间。创建后取消注释并填入 id：
+  //   npx wrangler kv namespace create NONCES
+  // 不配置也能跑通，只是失去重放保护（cap-api.ts 在 NONCES 缺省时会自动跳过）。
+  // "kv_namespaces": [{ "binding": "NONCES", "id": "<namespace id>" }]
 }

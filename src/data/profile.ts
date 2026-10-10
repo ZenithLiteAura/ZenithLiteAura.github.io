@@ -1,5 +1,8 @@
 import type { ContactLink, LocalizedText } from '../types'
 
+/** 公开邮箱：主页的联系方式与 /verify/ 页的无障碍替代入口共用同一处定义。 */
+const EMAIL = 'admin@zenithliteaura.site'
+
 /**
  * 个人资料 —— 全站唯一的文案来源。
  * 这里的内容都已确认，页面上不再有 TODO 占位。
@@ -9,6 +12,8 @@ export const profile = {
   login: 'ZenithLiteAura',
   avatar: '/avatar.jpg',
   github: 'https://github.com/ZenithLiteAura',
+  /** 公开邮箱。 */
+  email: EMAIL,
 
   /** 账号信息，取自 GitHub。 */
   joined: '2024-05-18T05:46:54Z',
@@ -41,8 +46,8 @@ export const profile = {
     {
       id: 'email',
       labelKey: 'contact.email',
-      value: 'admin@zenithliteaura.site',
-      href: 'mailto:admin@zenithliteaura.site',
+      value: EMAIL,
+      href: `mailto:${EMAIL}`,
       todo: false,
     },
   ] satisfies ContactLink[],
