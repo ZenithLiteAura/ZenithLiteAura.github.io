@@ -58,18 +58,3 @@
 .verify-gate .btn {
   width: 100%;
 }
-
-/* Cap widget → MIUIX 令牌 */
-cap-widget {
-  --cap-background: var(--card);
-  --cap-border-color: var(--line);
-  --cap-border-radius: 14px;
-  --cap-color: var(--text);
-  --cap-font: var(--font-sans);
-  --cap-focus-ring: var(--primary);
-  --cap-checkbox-background: var(--surface-container);
-  --cap-checkbox-border: 1px solid var(--line);
-  --cap-spinner-background-color: var(--line);
-  --cap-spinner-color: var(--primary);
-  --cap-troubleshoot-color: var(--primary);
-}

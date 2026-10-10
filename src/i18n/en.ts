@@ -58,4 +58,28 @@ export const en: Dict = {
 
   'verify.capUnavailableTitle': 'Cap needs a backend',
   'verify.motionLoad': 'Load Driftcha anyway',
+
+  /* ---------------- /admin/ ---------------- */
+
+  'admin.metaTitle': 'Admin sign-in · ZenithLiteAura',
+  'admin.metaDescription': 'Admin sign-in.',
+
+  'admin.title': 'Admin sign-in',
+  'admin.subtitle': 'Enter the password and pass the Cap check',
+  'admin.password': 'Password',
+  'admin.passwordPlaceholder': 'Admin password',
+  'admin.signIn': 'Sign in',
+  'admin.signingIn': 'Checking…',
+  'admin.checking': 'Checking your session…',
+
+  'admin.errorGeneric': 'Incorrect password or CAPTCHA',
+  'admin.errorRateLimited': 'Too many attempts. Try again in about {minutes} minutes.',
+  'admin.errorNoBackend': 'No backend reachable: /admin only works on the Cloudflare Worker',
+  'admin.errorNotConfigured': 'Backend is not fully configured. Missing: {missing}',
+
+  'admin.panelTitle': 'Signed in',
+  'admin.panelSubtitle': 'Session is valid',
+  'admin.panelBody': 'Content management will live here. This round only wired up the sign-in flow.',
+  'admin.sessionExpires': 'Session expires',
+  'admin.signOut': 'Sign out',
 }

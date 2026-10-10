@@ -54,4 +54,28 @@ export const zh = {
 
   'verify.capUnavailableTitle': 'Cap 需要一个后端',
   'verify.motionLoad': '仍要加载 Driftcha',
+
+  /* ---------------- /admin/ 后台 ---------------- */
+
+  'admin.metaTitle': '后台登录 · ZenithLiteAura',
+  'admin.metaDescription': '管理后台登录。',
+
+  'admin.title': '后台登录',
+  'admin.subtitle': '输入密码，并通过 Cap 验证',
+  'admin.password': '密码',
+  'admin.passwordPlaceholder': '输入管理员密码',
+  'admin.signIn': '登录',
+  'admin.signingIn': '正在验证…',
+  'admin.checking': '正在检查会话…',
+
+  'admin.errorGeneric': '密码或验证码不正确',
+  'admin.errorRateLimited': '尝试次数过多，请约 {minutes} 分钟后再试',
+  'admin.errorNoBackend': '连接不上后端：/admin 只能在 Cloudflare Worker 上使用',
+  'admin.errorNotConfigured': '后端配置不全，缺少：{missing}',
+
+  'admin.panelTitle': '已登录',
+  'admin.panelSubtitle': '会话有效',
+  'admin.panelBody': '这里以后放内容管理。本次只跑通了登录链路。',
+  'admin.sessionExpires': '会话到期',
+  'admin.signOut': '退出登录',
 } as const

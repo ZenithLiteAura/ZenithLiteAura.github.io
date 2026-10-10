@@ -1,0 +1,99 @@
+/* ===================================================================
+   /admin/ 登录页样式。复用 tokens.css 的 MIUIX 令牌，
+   居中一张卡片，不套主站那套 section 框架。
+   =================================================================== */
+
+.admin-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+}
+
+.admin-card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.admin-sub {
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin-bottom: 2px;
+}
+
+.admin-form,
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-label {
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.admin-input {
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-container);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  transition: border-color var(--dur-fast) var(--ease-standard);
+}
+
+.admin-input::placeholder {
+  color: var(--text-3);
+}
+
+.admin-input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* 浮动模式下 cap-widget 平时是 display:none（脚本会自己设置），这里只保证它不被拉伸 */
+.admin-form cap-widget {
+  align-self: flex-start;
+}
+
+.admin-submit {
+  width: 100%;
+}
+
+.admin-status {
+  min-height: 1.3em;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.admin-status[data-kind='error'] {
+  color: #d42f2f;
+}
+
+[data-theme='dark'] .admin-status[data-kind='error'] {
+  color: #ff7676;
+}
+
+.admin-hint {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+@media (max-width: 430px) {
+  .admin-card {
+    max-width: none;
+  }
+}

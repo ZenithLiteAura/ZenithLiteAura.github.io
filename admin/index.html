@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>后台登录 · ZenithLiteAura</title>
+    <meta name="description" content="管理后台登录。" />
+    <!-- 后台页面，不进搜索引擎 -->
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="same-origin" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script>
+      // 在首屏绘制前套用已保存的主题，避免浅/深色闪烁（FOUC）。
+      (function () {
+        try {
+          var pref = localStorage.getItem('zla:theme') || 'system'
+          var dark =
+            pref === 'dark' ||
+            (pref === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+        } catch (e) {
+          /* 隐私模式下 localStorage 不可用，忽略即可 */
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <noscript>
+      <div class="noscript">
+        <h1>后台登录 / Admin</h1>
+        <p>
+          本页需要 JavaScript。<br />
+          This page needs JavaScript.
+        </p>
+        <p><a href="/">返回主页 / Back to home</a></p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/admin/main.ts"></script>
+  </body>
+</html>
