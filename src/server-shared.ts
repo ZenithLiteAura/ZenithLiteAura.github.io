@@ -20,6 +20,8 @@ export interface ServerEnv {
   ADMIN_PASSWORD?: string
   /** 可选：会话签名密钥。缺省时由 CAP_SECRET 派生（域分离）。 */
   ADMIN_SESSION_SECRET?: string
+  /** 拉取 GitHub 公开仓库快照用（后台的「刷新快照」按钮）。 */
+  GITHUB_TOKEN?: string
 }
 
 /**

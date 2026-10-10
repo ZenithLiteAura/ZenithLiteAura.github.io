@@ -3,6 +3,8 @@ import type { IncomingMessage } from 'node:http'
 import type { Plugin } from 'vite'
 import { handleAdminApi } from '../src/admin/admin-api.ts'
 import { isAdminApiPath } from '../src/admin/admin-shared.ts'
+import { handlePublicContent } from '../src/content/content-api.ts'
+import { isPublicContentPath } from '../src/content/content-shared.ts'
 import { handleCapApi } from '../src/verify/cap-api.ts'
 import { isCapApiPath } from '../src/verify/cap-shared.ts'
 import type { KvStore, ServerEnv } from '../src/server-shared.ts'
@@ -70,6 +72,7 @@ function resolveEnv(): { env: ServerEnv; notes: string[] } {
       CAP_SECRET: secret ?? DEV_FALLBACK_SECRET,
       ADMIN_PASSWORD: password ?? DEV_FALLBACK_PASSWORD,
       ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET ?? vars.ADMIN_SESSION_SECRET,
+      GITHUB_TOKEN: process.env.GITHUB_TOKEN ?? vars.GITHUB_TOKEN,
       ADMIN_KV: new MemoryKv(),
     },
     notes,
@@ -100,7 +103,8 @@ export function apiDevServer(): Plugin {
         const pathname = (req.url ?? '').split('?')[0]
         const isCap = isCapApiPath(pathname)
         const isAdmin = isAdminApiPath(pathname)
-        if (!isCap && !isAdmin) {
+        const isContent = isPublicContentPath(pathname)
+        if (!isCap && !isAdmin && !isContent) {
           next()
           return
         }
@@ -126,7 +130,9 @@ export function apiDevServer(): Plugin {
 
             const response = isAdmin
               ? await handleAdminApi(request, env)
-              : await handleCapApi(request, env)
+              : isContent
+                ? await handlePublicContent(env)
+                : await handleCapApi(request, env)
 
             res.statusCode = response.status
             response.headers.forEach((value, key) => res.setHeader(key, value))

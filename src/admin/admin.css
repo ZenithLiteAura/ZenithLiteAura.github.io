@@ -97,3 +97,198 @@
     max-width: none;
   }
 }
+
+/* ===================================================================
+   管理面板
+   =================================================================== */
+
+.admin-shell--panel {
+  display: block;
+  place-items: initial;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px 16px calc(60px + env(safe-area-inset-bottom));
+}
+
+.admin-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-head__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-btn {
+  width: auto;
+  height: 38px;
+  padding: 0 16px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.admin-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--card);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+}
+
+.admin-block__title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.admin-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-grid--tight {
+  margin-top: 6px;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-input,
+.admin-textarea {
+  width: 100%;
+}
+
+.admin-textarea {
+  height: auto;
+  min-height: 76px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-container);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.admin-textarea::placeholder {
+  color: var(--text-3);
+}
+
+.admin-textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-status--inline {
+  min-height: 0;
+}
+
+/* 项目描述：每个仓库一组 */
+.admin-project {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-project:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.admin-project__name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.admin-project .admin-input {
+  height: 38px;
+  font-size: 13px;
+}
+
+/* 站点文案：可搜索的长列表 */
+.admin-i18n-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-i18n-toolbar .admin-input {
+  flex: 1 1 200px;
+}
+
+.admin-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.admin-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+.admin-i18n-list {
+  max-height: 440px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.admin-i18n-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 8px 4px;
+  border-top: 1px solid var(--line);
+}
+
+.admin-i18n-row:first-child {
+  border-top: 0;
+}
+
+.admin-i18n-key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+
+.admin-i18n-row .admin-input {
+  height: 36px;
+  font-size: 13px;
+}
+
+@media (min-width: 720px) {
+  .admin-i18n-row {
+    grid-template-columns: 190px 1fr 1fr;
+    align-items: center;
+  }
+}

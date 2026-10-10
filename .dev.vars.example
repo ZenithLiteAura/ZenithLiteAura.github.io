@@ -1,6 +1,13 @@
-# 复制成 .dev.vars 后，npm run dev 就会使用你自己的密钥来跑 Cap 后端。
-# .dev.vars 已被 .gitignore 忽略，不会进仓库；线上用 wrangler secret put CAP_SECRET 设置。
+# 复制成 .dev.vars 后，npm run dev 就会使用你自己的密钥来跑后端。
+# .dev.vars 已被 .gitignore 忽略，不会进仓库；线上用 wrangler secret put 设置。
 #
-# 要求：至少 16 字节的高熵随机串。生成示例：
+# CAP_SECRET：至少 16 字节的高熵随机串。生成示例：
 #   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 CAP_SECRET=replace-with-a-long-random-string
+
+# 后台登录密码（本地不设则用仅本机的兜底值）
+ADMIN_PASSWORD=replace-with-your-admin-password
+
+# 可选：后台「重新抓取 GitHub 快照」用。不设则该按钮提示缺少配置。
+# 建议用只授这一个账号公开仓库读取的细粒度 PAT，别用权限很宽的经典令牌。
+GITHUB_TOKEN=

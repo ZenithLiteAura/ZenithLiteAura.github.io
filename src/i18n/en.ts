@@ -1,4 +1,4 @@
-import type { Dict } from './types'
+import type { Dict } from './types.ts'
 
 /** 英文文案。键必须与 src/i18n/zh.ts 完全一致。 */
 export const en: Dict = {
@@ -82,4 +82,36 @@ export const en: Dict = {
   'admin.panelBody': 'Content management will live here. This round only wired up the sign-in flow.',
   'admin.sessionExpires': 'Session expires',
   'admin.signOut': 'Sign out',
+
+  'admin.sectionProfile': 'Profile',
+  'admin.sectionProjects': 'Projects',
+  'admin.sectionRepos': 'GitHub snapshot',
+  'admin.sectionI18n': 'Site copy',
+  'admin.emptyMeansDefault': 'Empty = use the default (grey text shows the default)',
+  'admin.fieldLogin': 'Display name',
+  'admin.fieldHeadline': 'Tagline',
+  'admin.fieldBio': 'About',
+  'admin.fieldSkills': 'Skills (comma separated)',
+  'admin.fieldEmail': 'Email',
+  'admin.fieldGithub': 'GitHub URL',
+  'admin.fieldOrder': 'Display order (repo names, comma separated)',
+  'admin.fieldHidden': 'Repos hidden from the homepage (comma separated)',
+  'admin.save': 'Save',
+  'admin.saving': 'Saving…',
+  'admin.saved': 'Saved — live within about 30 seconds',
+  'admin.saveFailed': 'Save failed',
+  'admin.reset': 'Clear override',
+  'admin.expired': 'Session expired — sign in again',
+  'admin.loadingContent': 'Reading current overrides…',
+  'admin.reposCount': 'public repos',
+  'admin.reposRefresh': 'Re-fetch and save',
+  'admin.reposRefreshing': 'Fetching…',
+  'admin.reposHint': 'Re-fetch the public repo snapshot from GitHub (private repos are filtered out).',
+  'admin.reposOverride': 'Using the snapshot saved from the admin',
+  'admin.reposBuiltin': 'Using the build-time snapshot',
+  'admin.i18nSearch': 'Search keys…',
+  'admin.i18nOnlyOverridden': 'Only overridden',
+  'admin.viewSite': 'View site',
+  'admin.publicHint':
+    'After saving, the public pages pick it up within about 30 seconds (they fetch overrides on load). Refresh the homepage to see it.',
 }

@@ -9,6 +9,7 @@ import 'driftcha/style.css'
 import './verify.css'
 
 import type { Driftcha } from 'driftcha'
+import { loadContentOverrides } from '../content/overrides'
 import { dict } from '../i18n'
 import { syncAppBarScroll } from '../sections/appbar'
 import { applyTheme, state, subscribe } from '../store'
@@ -66,6 +67,10 @@ applyTheme()
 document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en'
 
 subscribe(render)
-render()
+
+void (async () => {
+  await loadContentOverrides()
+  render()
+})()
 
 window.addEventListener('scroll', syncAppBarScroll, { passive: true })

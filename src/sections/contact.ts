@@ -1,4 +1,4 @@
-import { profile } from '../data/profile'
+import { contactEntries, profile } from '../data/profile'
 import { h } from '../dom'
 import { dict } from '../i18n'
 import type { DictKey } from '../i18n'
@@ -9,7 +9,7 @@ export function renderContact(): HTMLElement {
   const d = dict(state.lang)
   const card = h('div', { class: 'card' })
 
-  for (const contact of profile.contacts) {
+  for (const contact of contactEntries()) {
     const label = d[contact.labelKey as DictKey]
 
     if (contact.value && contact.href) {

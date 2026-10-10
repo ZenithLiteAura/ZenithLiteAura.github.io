@@ -1,16 +1,19 @@
 import snapshot from './repos.snapshot.json'
 import type { Lang, Project, RepoSnapshot } from '../types'
 import { profile } from './profile'
-import { curatedDescriptions, hiddenRepos } from './curated'
+import { curatedDescriptions, hiddenRepos, projectOrder } from './curated'
 
 /**
  * 数据来源：GitHub REST API 的公开仓库快照（已剔除 private 仓库）。
- * 刷新方式见 README「刷新 GitHub 数据」一节。
+ * 后台可以「一键刷新」把它换成新的快照（存进 KV 覆盖层），刷新方式见 README。
  */
-const repos = snapshot as RepoSnapshot[]
+let repos = snapshot as RepoSnapshot[]
+
+/** 构建时的快照（后台清空覆盖时回退到这里）。 */
+export const builtinRepos: RepoSnapshot[] = snapshot as RepoSnapshot[]
 
 /** 站点自身所在的仓库不放进项目卡片（页脚已有源码链接）。 */
-const SITE_REPO = `${profile.login}.github.io`
+const siteRepo = (): string => `${profile.login}.github.io`
 
 /** 语言色点，沿用 GitHub 的配色习惯。 */
 const LANGUAGE_COLORS: Record<string, string> = {
@@ -65,15 +68,44 @@ function toProject(repo: RepoSnapshot): Project {
 }
 
 /**
- * 本人仓库，已按星标与更新时间排序。
- * 排除：Fork 的仓库、站点自身所在仓库、以及 curated.ts 里声明为占位空仓库的仓库。
+ * 本人仓库（会被 recomputeProjects 原地改写，所以数组引用保持稳定，导入方能看到更新）。
+ * 排除：Fork 的仓库、站点自身所在仓库、以及声明为占位空仓库的仓库。
  */
-export const ownProjects: Project[] = repos
-  .filter(
-    (repo) =>
-      !repo.fork && repo.name !== SITE_REPO && !hiddenRepos.includes(repo.name),
-  )
-  .map(toProject)
+export const ownProjects: Project[] = []
 
-/** 公开仓库总数（与 GitHub 个人页数字一致）。 */
-export const publicRepoCount = repos.length
+/** 公开仓库总数（与 GitHub 个人页数字一致）。用 let 导出，导入方拿的是实时值。 */
+export let publicRepoCount = repos.length
+
+/** 后台刷新快照后替换数据源。 */
+export function applyRepoOverride(list: RepoSnapshot[]): void {
+  repos = list
+}
+
+/** 某个仓库在 GitHub 上的原始简述（后台表单拿它当 placeholder）。 */
+export function githubDescriptionOf(name: string): string {
+  return repos.find((repo) => repo.name === name)?.description ?? ''
+}
+
+/** 重新计算项目列表；默认值、覆盖、顺序任一变化后都要调用一次。 */
+export function recomputeProjects(): void {
+  const projects = repos
+    .filter(
+      (repo) => !repo.fork && repo.name !== siteRepo() && !hiddenRepos.includes(repo.name),
+    )
+    .map(toProject)
+
+  // 自定义顺序：列在前面的先显示，没列到的保持原顺序排在后面
+  if (projectOrder.length > 0) {
+    const rank = new Map(projectOrder.map((name, index) => [name, index]))
+    projects.sort(
+      (a, b) =>
+        (rank.get(a.name) ?? Number.MAX_SAFE_INTEGER) - (rank.get(b.name) ?? Number.MAX_SAFE_INTEGER),
+    )
+  }
+
+  ownProjects.length = 0
+  ownProjects.push(...projects)
+  publicRepoCount = repos.length
+}
+
+recomputeProjects()

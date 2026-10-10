@@ -1,6 +1,7 @@
 import { generateChallenge, validateChallenge } from 'capjs-core'
 import type { ValidateChallengeBody } from 'capjs-core'
 import { jsonResponse } from '../verify/cap-api.ts'
+import { handleAdminContent, handleSnapshotRefresh } from '../content/content-api.ts'
 import { kvNonceConsumer } from '../server-shared.ts'
 import type { KvStore, ServerEnv } from '../server-shared.ts'
 import {
@@ -111,6 +112,13 @@ function readCookie(request: Request, name: string): string | null {
 function sessionCookie(request: Request, value: string, maxAge: number): string {
   const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : ''
   return `${SESSION_COOKIE}=${value}; Path=${SESSION_COOKIE_PATH}; Max-Age=${maxAge}; HttpOnly; SameSite=Strict${secure}`
+}
+
+/** 供内容接口复用：只有带有效会话 cookie 才算登录。 */
+export async function hasAdminSession(request: Request, env: ServerEnv): Promise<boolean> {
+  const token = readCookie(request, SESSION_COOKIE)
+  if (!token) return false
+  return (await verifySession(env, token)) !== null
 }
 
 /* --------------------------- 密码与限流 --------------------------- */
@@ -273,6 +281,28 @@ export async function handleAdminApi(request: Request, env: ServerEnv): Promise<
     return session(request, env)
   }
 
+  // 内容接口用 GET/PUT/DELETE，且必须已登录
+  if (route === 'content') {
+    if (method !== 'GET' && method !== 'PUT' && method !== 'DELETE') {
+      return jsonResponse({ error: 'method_not_allowed' }, 405)
+    }
+    if (!(await hasAdminSession(request, env))) {
+      return jsonResponse({ error: 'unauthorized' }, 401)
+    }
+    const origin = request.headers.get('origin')
+    if (method !== 'GET' && origin && origin !== new URL(request.url).origin) {
+      return jsonResponse({ error: 'forbidden' }, 403)
+    }
+    const missingKv = missingConfig(env)
+    if (!env.ADMIN_KV) {
+      return jsonResponse(
+        { error: 'server_not_configured', missing: missingKv, message: '缺少 ADMIN_KV' },
+        503,
+      )
+    }
+    return handleAdminContent(request, env)
+  }
+
   if (method !== 'POST') return jsonResponse({ error: 'method_not_allowed' }, 405)
 
   const missing = missingConfig(env)
@@ -299,6 +329,8 @@ export async function handleAdminApi(request: Request, env: ServerEnv): Promise<
         return await login(request, env)
       case 'logout':
         return await logout(request)
+      case 'github/snapshot':
+        return await handleSnapshotRefresh(env)
       default:
         return jsonResponse({ error: 'not_found' }, 404)
     }

@@ -4,6 +4,7 @@ import './styles/components.css'
 import './styles/motion.css'
 
 import { renderApp } from './app'
+import { loadContentOverrides } from './content/overrides'
 import { dict } from './i18n'
 import { syncAppBarScroll } from './sections/appbar'
 import { initSheet, rerenderSheet } from './sections/sheet'
@@ -40,6 +41,11 @@ function render(): void {
 }
 
 subscribe(render)
-render()
+
+// 先拉内容覆盖再首次渲染：拿到就用 KV 里的内容，拿不到就用构建时的默认值
+void (async () => {
+  await loadContentOverrides()
+  render()
+})()
 
 window.addEventListener('scroll', syncAppBarScroll, { passive: true })

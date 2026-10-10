@@ -1,5 +1,7 @@
 import { handleAdminApi } from '../src/admin/admin-api'
 import { isAdminApiPath } from '../src/admin/admin-shared'
+import { handlePublicContent } from '../src/content/content-api'
+import { isPublicContentPath } from '../src/content/content-shared'
 import { handleCapApi } from '../src/verify/cap-api'
 import { isCapApiPath } from '../src/verify/cap-shared'
 import type { ServerEnv } from '../src/server-shared'
@@ -21,6 +23,11 @@ export default {
 
     if (isAdminApiPath(pathname)) {
       return handleAdminApi(request, env)
+    }
+
+    // 公开的内容覆盖（无需登录）：页面启动时拉这个
+    if (isPublicContentPath(pathname)) {
+      return handlePublicContent(env)
     }
 
     if (isCapApiPath(pathname)) {
