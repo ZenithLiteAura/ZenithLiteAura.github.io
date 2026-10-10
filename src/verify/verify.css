@@ -13,11 +13,36 @@
 .verify-widget {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  /* stretch：让 driftcha 拿到卡片完整宽度。
+     它内部的 canvas 固有尺寸是 520×240（= 字段 260×120 × scale 2），
+     会被 min-width:auto 链条锁成最小宽度，窄屏下就会被卡片裁掉。 */
+  align-items: stretch;
   gap: 10px;
   /* 预留高度，避免控件加载完成时页面跳动 */
   min-height: 84px;
   width: 100%;
+}
+
+/* Driftcha：解除 canvas 固有尺寸带来的最小宽度，让它跟着卡片缩放。
+   （根元素类名是 .driftcha，见 driftcha.js 里 root.className = 'driftcha'）
+   实测生效：520px → 264px，且渲染器会把画布重排为 260×120（原生字段尺寸，比例不变）。 */
+#driftcha .driftcha {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+#driftcha .dc-stage,
+#driftcha .dc-canvas {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Cap 控件保持自己 260px 的宽度，不要被拉满 */
+.verify-widget cap-widget {
+  align-self: flex-start;
 }
 
 .verify-badge {
