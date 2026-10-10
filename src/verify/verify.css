@@ -1,29 +1,29 @@
 /* ===================================================================
-   /verify/ 对比页专属样式。
-   全部基于 tokens.css 的令牌，并把 cap-widget 的 --cap-* 变量映射到站点配色，
-   这样两个控件在浅色/深色下都不会突兀。
+   /verify/ 页面样式。
+   页面只放两个验证码本体，所以这里只有三件事：
+     1. 两个控件的纵向排布
+     2. 解除 driftcha 的固有最小宽度（窄屏会被裁）
+     3. 把 cap-widget 的 --cap-* 变量映射到站点配色
    =================================================================== */
 
-.verify-card {
+.verify-page {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 22px;
+  padding-top: 6px;
 }
 
 .verify-widget {
   display: flex;
   flex-direction: column;
-  /* stretch：让 driftcha 拿到卡片完整宽度。
-     它内部的 canvas 固有尺寸是 520×240（= 字段 260×120 × scale 2），
-     会被 min-width:auto 链条锁成最小宽度，窄屏下就会被卡片裁掉。 */
+  /* stretch：让 driftcha 拿到完整宽度。
+     它内部 canvas 的固有尺寸是 520×240（= 字段 260×120 × scale 2），
+     会被 min-width:auto 链条锁成最小宽度，窄屏下就会被裁掉。 */
   align-items: stretch;
-  gap: 10px;
-  /* 预留高度，避免控件加载完成时页面跳动 */
-  min-height: 84px;
   width: 100%;
 }
 
-/* Driftcha：解除 canvas 固有尺寸带来的最小宽度，让它跟着卡片缩放。
+/* Driftcha：解除 canvas 固有尺寸带来的最小宽度，让它跟着容器缩放。
    （根元素类名是 .driftcha，见 driftcha.js 里 root.className = 'driftcha'）
    实测生效：520px → 264px，且渲染器会把画布重排为 260×120（原生字段尺寸，比例不变）。 */
 #driftcha .driftcha {
@@ -41,34 +41,17 @@
 }
 
 /* Cap 控件保持自己 260px 的宽度，不要被拉满 */
-.verify-widget cap-widget {
+#cap cap-widget {
   align-self: flex-start;
 }
 
-.verify-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 11px;
-  border-radius: var(--r-chip);
-  background: var(--surface-container);
-  color: var(--text-2);
-  font-size: 12px;
-}
-
+/* 后端不可用时的那一行说明，以及 reduced-motion 下的加载按钮 */
 .verify-callout {
   font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
+  color: var(--text-2);
 }
 
 .verify-gate {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-}
-
-.verify-gate__act {
   display: flex;
 }
 
@@ -76,62 +59,7 @@
   width: 100%;
 }
 
-.verify-mail a {
-  font-size: 13px;
-  word-break: break-all;
-}
-
-/* ---------------- 对比表 ---------------- */
-
-.cmp-wrap {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-}
-
-.cmp {
-  width: 100%;
-  min-width: 520px;
-  border-collapse: collapse;
-  font-size: 12.5px;
-}
-
-.cmp th,
-.cmp td {
-  padding: 9px 10px;
-  text-align: left;
-  vertical-align: top;
-  border-bottom: 1px solid var(--line);
-  line-height: 1.6;
-}
-
-.cmp thead th {
-  color: var(--text-2);
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.cmp__feature {
-  color: var(--text-2);
-  white-space: nowrap;
-}
-
-.cmp td {
-  color: var(--text-2);
-}
-
-/* 这一项更合适的一方：加深并加一个小圆点标记 */
-.cmp td.is-better {
-  color: var(--text);
-  font-weight: 500;
-  position: relative;
-}
-
-.cmp tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-/* ---------------- Cap widget → MIUIX 令牌 ---------------- */
-
+/* Cap widget → MIUIX 令牌 */
 cap-widget {
   --cap-background: var(--card);
   --cap-border-color: var(--line);

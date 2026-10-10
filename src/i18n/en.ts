@@ -49,44 +49,13 @@ export const en: Dict = {
   'footer.source': 'View source',
   'footer.langNote': 'Bilingual',
 
-  /* ---------------- /verify/ comparison page ---------------- */
+  /* ---------------- /verify/ CAPTCHA page ---------------- */
 
-  'verify.metaTitle': 'CAPTCHA demo · ZenithLiteAura',
-  'verify.metaDescription': 'Driftcha vs Cap: two CAPTCHA approaches, side by side.',
+  'verify.metaTitle': 'CAPTCHA · ZenithLiteAura',
+  'verify.metaDescription': 'Two CAPTCHAs: Driftcha and Cap.',
 
   'verify.title': 'CAPTCHA',
-  'verify.subtitle': 'Driftcha vs Cap',
 
-  'verify.lead':
-    'Both are mounted on this page so you can compare them directly. The key difference: Driftcha runs fully static, while Cap needs a backend.',
-
-  'verify.tableTitle': 'Comparison',
-  'verify.colFeature': 'Aspect',
-  'verify.colDriftcha': 'Driftcha',
-  'verify.colCap': 'Cap',
-
-  'verify.driftchaTitle': 'Driftcha · motion noise',
-  'verify.driftchaMode': 'Browser-only · no server',
-  'verify.driftchaNote':
-    'Everything runs in the page. No pass token is issued and this is not real protection — upstream calls it "a speed bump, not a defense".',
-
-  'verify.capTitle': 'Cap · invisible proof-of-work',
-  'verify.capLoading': 'Probing the Cap backend…',
-  'verify.capHint': 'On success the server issues a token you can verify later.',
   'verify.capUnavailableTitle': 'Cap needs a backend',
-  'verify.capUnavailableBody':
-    'No /verify/cap/ backend is reachable here (GitHub Pages is static hosting). npm run dev mounts one locally; in production a Cloudflare Worker provides it.',
-  'verify.capSolved': 'Solved, token:',
-  'verify.capError': 'Error',
-
-  'verify.a11yTitle': 'Accessibility',
-  'verify.a11yBody':
-    'Driftcha depends on motion vision: screen-reader users and people with low vision cannot solve it, and it may be unpleasant for those sensitive to motion. Cap is invisible, with no visual puzzle. To reach me, email:',
-
-  'verify.motionTitle': 'Reduced motion is on',
-  'verify.motionBody': 'Driftcha animates continuously, so it was not loaded automatically.',
   'verify.motionLoad': 'Load Driftcha anyway',
-
-  'verify.footnote': 'This page is a self-test; it is not wired to any real form.',
-  'verify.back': 'Back to home',
 }

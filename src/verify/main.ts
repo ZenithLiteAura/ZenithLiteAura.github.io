@@ -2,6 +2,9 @@ import '../styles/tokens.css'
 import '../styles/base.css'
 import '../styles/components.css'
 import '../styles/motion.css'
+// driftcha 的样式表：控件本身不自带注入，必须由使用者导入，
+// 否则它就是一堆没有边框/间距/字号的裸元素（canvas 还会保持 520px 固有宽）。
+import 'driftcha/style.css'
 import './verify.css'
 
 import type { Driftcha } from 'driftcha'

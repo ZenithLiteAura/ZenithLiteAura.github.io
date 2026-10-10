@@ -57,6 +57,13 @@
   transition: font-size var(--dur-base) var(--ease-standard);
 }
 
+/* 标题作为回主页链接时（/verify/ 用），不显示下划线、颜色跟随标题 */
+.appbar__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
 .appbar[data-scrolled='true'] .appbar__name {
   font-size: 17px;
 }

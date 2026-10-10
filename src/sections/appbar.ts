@@ -15,10 +15,11 @@ const THEME_ICONS: Record<ThemePref, string> = {
 }
 
 /**
- * 通用顶栏：大标题 + 副标题 + 语言/主题开关。
- * 主页与 /verify/ 共用，避免两处各写一份。
+ * 通用顶栏：标题 + 可选副标题 + 语言/主题开关。
+ *
+ * homeHref 传入时标题会变成回主页的链接（/verify/ 靠它返回，省掉一行页脚）。
  */
-export function renderTopBar(title: string, subtitle: string): HTMLElement {
+export function renderTopBar(title: string, subtitle = '', homeHref?: string): HTMLElement {
   const d = dict(state.lang)
 
   const langSwitch = segmented({
@@ -50,12 +51,15 @@ export function renderTopBar(title: string, subtitle: string): HTMLElement {
     },
   })
 
+  const name = h('span', { class: 'appbar__name', text: title })
+  const titleNode = homeHref ? h('a', { class: 'appbar__link', href: homeHref }, [name]) : name
+  const titleChildren: (Node | string)[] = [titleNode]
+  // subtitle 为空就不渲染节点，避免留一个空元素影响收起动画
+  if (subtitle) titleChildren.push(h('span', { class: 'appbar__sub', text: subtitle }))
+
   return h('header', { class: 'appbar', id: 'appbar' }, [
     h('div', { class: 'appbar__inner' }, [
-      h('div', { class: 'appbar__title' }, [
-        h('span', { class: 'appbar__name', text: title }),
-        h('span', { class: 'appbar__sub', text: subtitle }),
-      ]),
+      h('div', { class: 'appbar__title' }, titleChildren),
       h('div', { class: 'appbar__actions' }, [langSwitch, themeSwitch]),
     ]),
   ])
