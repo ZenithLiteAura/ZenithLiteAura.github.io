@@ -281,9 +281,10 @@ export async function handleAdminApi(request: Request, env: ServerEnv): Promise<
     return session(request, env)
   }
 
-  // 内容接口用 GET/PUT/DELETE，且必须已登录
-  if (route === 'content') {
-    if (method !== 'GET' && method !== 'PUT' && method !== 'DELETE') {
+  // 需要登录的路由：内容读写 + 快照刷新（都必须是有效会话，否则任何人都能改站点内容）
+  if (route === 'content' || route === 'github/snapshot') {
+    const allowed = route === 'content' ? ['GET', 'PUT', 'DELETE'] : ['POST']
+    if (!allowed.includes(method)) {
       return jsonResponse({ error: 'method_not_allowed' }, 405)
     }
     if (!(await hasAdminSession(request, env))) {
@@ -293,13 +294,14 @@ export async function handleAdminApi(request: Request, env: ServerEnv): Promise<
     if (method !== 'GET' && origin && origin !== new URL(request.url).origin) {
       return jsonResponse({ error: 'forbidden' }, 403)
     }
-    const missingKv = missingConfig(env)
     if (!env.ADMIN_KV) {
+      const missingKv = missingConfig(env)
       return jsonResponse(
         { error: 'server_not_configured', missing: missingKv, message: '缺少 ADMIN_KV' },
         503,
       )
     }
+    if (route === 'github/snapshot') return handleSnapshotRefresh(env)
     return handleAdminContent(request, env)
   }
 
@@ -329,8 +331,6 @@ export async function handleAdminApi(request: Request, env: ServerEnv): Promise<
         return await login(request, env)
       case 'logout':
         return await logout(request)
-      case 'github/snapshot':
-        return await handleSnapshotRefresh(env)
       default:
         return jsonResponse({ error: 'not_found' }, 404)
     }
