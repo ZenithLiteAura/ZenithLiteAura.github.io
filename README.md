@@ -196,10 +196,9 @@ npx wrangler versions upload --dry-run # 预览：校验配置能解析
 线上配置步骤：
 
 ```bash
-npx wrangler secret put CAP_SECRET     # 至少 16 字节的高熵随机串
-# 可选：防重放（不配也能跑，只是没有重放保护）
-npx wrangler kv namespace create NONCES
-#   然后把返回的 id 填进 wrangler.jsonc 里被注释掉的 kv_namespaces
+npx wrangler secret put CAP_SECRET        # 至少 16 字节的高熵随机串
+npx wrangler secret put ADMIN_PASSWORD    # 后台登录密码（见「/admin 后台」一节）
+npx wrangler kv namespace create ADMIN_KV # 绑定名必须是 ADMIN_KV，把返回的 id 填进 wrangler.jsonc
 ```
 
 本地想用固定密钥，就把 `.dev.vars.example` 复制成 `.dev.vars`（已被 gitignore）。
@@ -212,6 +211,45 @@ npx wrangler kv namespace create NONCES
 2. **npm 12 起默认拒绝一切非 registry 来源**（`allow-remote=none` / `allow-git=none`），
    所以仓库根有 `.npmrc` 写着 `allow-remote=root`：只放行本项目自己声明的 remote 依赖，
    传递依赖引入的 remote 包仍被拒绝。**删掉这个文件 CI 会装不上依赖。**
+
+## `/admin` 后台登录页
+
+<https://zenithliteaura.site/admin/>
+
+只在 Cloudflare Worker 上可用；从 GitHub Pages 打开会提示「需要后端」。
+
+登录流程：填密码 → 点「登录」→ Cap **浮动模式**从按钮上方弹入并自动解题 →
+解完把 token 写到按钮上并**自动重新触发提交** → 服务端校验「一次性凭证 + 密码 + 限流」→
+下发 `HttpOnly` 会话 cookie。
+
+用浮动模式的原因：控件平时不占位，点按钮才弹出，解完自动继续提交——正是 Cap 官方 demo 的交互。
+点击动画（对勾用 `stroke-dashoffset` 0.3s 画出、失败时 `cap-shake` 抖动 0.5s）由 cap-widget 自带，
+不需要自己实现。
+
+### 安全构成
+
+| 层 | 实现 |
+| --- | --- |
+| 验证码 | Cap，独立 `scope: 'admin'`，与公开 `/verify/` 完全隔离 |
+| 凭证 | 解出后存 KV，登录时**一次性消耗**（用 `sha256(整串 token)` 作键，不依赖 capjs-core 的 token 格式） |
+| 密码 | Worker secret；两边各过一遍 HMAC 再比等长摘要（不泄露长度、无提前返回） |
+| 限流 | 同一 IP 15 分钟最多 10 次；连续失败 5 次锁定 → `429` + `Retry-After` |
+| 会话 | HMAC-SHA256，密钥由 `CAP_SECRET` 域分离派生（可用 `ADMIN_SESSION_SECRET` 覆盖） |
+| Cookie | `HttpOnly + SameSite=Strict + Path=/admin`，7 天 |
+
+> 如实说明：Cap 只是其中一层（上游自称 speed bump，真正的门是密码 + 一次性短时效凭证 + 限流）；
+> KV 是最终一致的，所以「一次性消耗」与「限流」是尽力而为而非原子操作。
+> 要更强可以上 Durable Objects，或在 `/admin` 前面再套一层 Cloudflare Access。
+
+### 本地调试
+
+`npm run dev` 会用 Vite 中间件挂上**同一份 handler**，并用**内存 KV** 顶替：
+
+```bash
+npm run dev     # 打开 http://localhost:5173/admin/
+```
+
+密钥取 `.dev.vars` 里的 `CAP_SECRET` / `ADMIN_PASSWORD`，缺省时用仅本机的兜底值。
 
 ## 说明
 

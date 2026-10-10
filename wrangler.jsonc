@@ -6,7 +6,7 @@
   // - nodejs_compat：capjs-core 内部使用 node:crypto 与 node:zlib（instrumentation 的
   //   deflate），在 Workers 上必须开启这个兼容标志
   //
-  // 部署：npx wrangler deploy
+  // 部署：npx wrangler deploy（本仓库接的是 git 自动部署，推送即发布）
   // 密钥：npx wrangler secret put CAP_SECRET        ← 不要写进本文件
   //       npx wrangler secret put ADMIN_PASSWORD    ← 后台登录密码
   "$schema": "node_modules/wrangler/config-schema.json",
@@ -16,12 +16,16 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist"
-  }
-
-  // 后台登录需要 KV（挑战 nonce、一次性凭证、限流计数都存这里）。
-  // ⚠️ 先创建命名空间，再把下面的 id 换成真实值并取消注释 —— 不要留占位 id，
-  //    否则 wrangler deploy 会失败（本仓库的 Worker 是 git 自动部署，会连带把发布弄挂）。
-  //   npx wrangler kv namespace create ADMIN_KV
-  //
-  // "kv_namespaces": [{ "binding": "ADMIN_KV", "id": "<真实 namespace id>" }]
+  },
+  "kv_namespaces": [
+    {
+      // 绑定名必须保持 ADMIN_KV：worker/index.ts 与 src/server-shared.ts 都按这个名字取用
+      "binding": "ADMIN_KV",
+      "id": "5855d7f8c9444bb7a3f3957b68f0b98f",
+      // remote: true 只影响 `wrangler dev`（本地开发直连线上 KV）。
+      // 注意它意味着 wrangler dev 会真的读写生产 KV；我们日常用的是 `npm run dev`
+      // （Vite 中间件 + 内存 KV），不受这个字段影响。
+      "remote": true
+    }
+  ]
 }
