@@ -63,13 +63,28 @@
   outline: none;
 }
 
-/* 浮动模式下 cap-widget 平时是 display:none（脚本会自己设置），这里只保证它不被拉伸 */
+/* 内联验证码：正常占位，靠左对齐即可 */
 .admin-form cap-widget {
   align-self: flex-start;
 }
 
-.admin-submit {
+/*
+  登录按钮。
+  注意 `.btn--primary` 自带 `flex: 1`（那是为**横向**按钮组设计的）；
+  放进纵向的 .admin-form 后等价于 flex-basis: 0，按钮会被压成只剩一行文字的高度
+  （实测 23px，而输入框是 44px）。所以这里显式复位 flex 并给足 CTA 高度。
+*/
+.admin-form .admin-submit {
+  flex: 0 0 auto;
   width: 100%;
+  height: 48px;
+  margin-top: 6px;
+  font-size: 15px;
+}
+
+/* 面板里的按钮不受上面那条影响，保持紧凑 */
+.admin-actions .admin-btn {
+  flex: 0 0 auto;
 }
 
 .admin-status {
