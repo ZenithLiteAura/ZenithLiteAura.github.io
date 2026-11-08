@@ -61,7 +61,6 @@ export const zh = {
   'admin.metaDescription': '管理后台登录。',
 
   'admin.title': '后台登录',
-  'admin.subtitle': '输入用户名与密码，并通过 Cap 验证',
   'admin.username': '用户名',
   'admin.usernamePlaceholder': '输入管理员用户名',
   'admin.password': '密码',
@@ -77,7 +76,6 @@ export const zh = {
   'admin.errorNotConfigured': '后端配置不全，缺少：{missing}',
 
   'admin.panelTitle': '已登录',
-  'admin.panelSubtitle': '会话有效',
   'admin.panelBody': '这里以后放内容管理。本次只跑通了登录链路。',
   'admin.sessionExpires': '会话到期',
   'admin.signOut': '退出登录',

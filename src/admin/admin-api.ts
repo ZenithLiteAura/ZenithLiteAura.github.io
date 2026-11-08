@@ -257,7 +257,12 @@ async function login(request: Request, env: ServerEnv): Promise<Response> {
   if (!(await kv.get(tokenKey))) return fail()
   await kv.delete(tokenKey)
 
-  if (!(await credentialsMatch(env, String(body.username ?? ''), String(body.password ?? '')))) {
+  // 用户名与密码都去掉首尾空白：复制粘贴时很容易带上尾随空格，
+  // 而那看起来和没带一模一样（输入框里只显示一个圆点），排查起来很费劲。
+  const providedUser = String(body.username ?? '').trim()
+  const providedPassword = String(body.password ?? '').trim()
+
+  if (!(await credentialsMatch(env, providedUser, providedPassword))) {
     return fail()
   }
 

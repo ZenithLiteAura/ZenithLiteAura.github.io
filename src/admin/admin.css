@@ -69,6 +69,18 @@
 }
 
 /*
+  语言切换。
+  登录/提示状态下它是 .admin-shell 的直接子元素，固定在右上角；
+  面板状态下它挂进 .admin-head__actions，随操作区排布，所以只对直接子元素定位。
+*/
+.admin-shell > .admin-lang {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+}
+
+/*
   登录按钮。
   注意 `.btn--primary` 自带 `flex: 1`（那是为**横向**按钮组设计的）；
   放进纵向的 .admin-form 后等价于 flex-basis: 0，按钮会被压成只剩一行文字的高度

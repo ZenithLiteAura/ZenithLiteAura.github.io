@@ -11,9 +11,14 @@ import { ADMIN_API_BASE } from './admin-shared'
 import { loadContentOverrides } from '../content/overrides'
 import { h } from '../dom'
 import { dict } from '../i18n'
-import { applyTheme, state, subscribe } from '../store'
+import { segmented } from '../sections/shared'
+import { setLang, applyTheme, state, subscribe } from '../store'
+import type { Lang } from '../types'
 import { renderLogin } from './login'
 import { renderPanel, resetPanelCache, setPanelRerender } from './panel'
+
+const LANGS: Lang[] = ['zh', 'en']
+const LANG_LABELS: Record<Lang, string> = { zh: '中', en: 'EN' }
 
 /**
  * 后台页面：先问一次会话（GET /admin/api/session），再决定显示登录表单还是管理面板。
@@ -51,11 +56,31 @@ function formatExpiry(ms: number): string {
   }).format(new Date(ms))
 }
 
-function shell(title: string, subtitle: string, content: HTMLElement): HTMLElement {
+/** 语言切换：复用它和主站同一套 segmented 样式，切完 setLang 会触发整页重渲染。 */
+function langSwitch(): HTMLElement {
+  const d = dict(state.lang)
+  const control = segmented({
+    ariaLabel: d['a11y.lang'],
+    options: LANGS.map((lang) => ({
+      key: lang,
+      label: LANG_LABELS[lang],
+      title: lang === 'zh' ? '中文' : 'English',
+    })),
+    activeIndex: LANGS.indexOf(state.lang),
+    onSelect: (index) => {
+      const lang = LANGS[index]
+      if (lang) setLang(lang)
+    },
+  })
+  control.classList.add('admin-lang')
+  return control
+}
+
+function shell(title: string, content: HTMLElement): HTMLElement {
   return h('main', { class: 'admin-shell' }, [
+    langSwitch(),
     h('div', { class: 'card card--pad admin-card' }, [
       h('h1', { class: 'admin-title', text: title }),
-      h('p', { class: 'admin-sub', text: subtitle }),
       content,
     ]),
   ])
@@ -88,7 +113,7 @@ function panelShell(): HTMLElement {
         h('h1', { class: 'admin-title', text: d['admin.panelTitle'] }),
         h('p', { class: 'admin-sub', text: `${d['admin.sessionExpires']}：${expires}` }),
       ]),
-      h('div', { class: 'admin-head__actions' }, [viewSite, signOut]),
+      h('div', { class: 'admin-head__actions' }, [langSwitch(), viewSite, signOut]),
     ]),
     h('p', { class: 'admin-hint', text: d['admin.publicHint'] }),
     renderPanel(),
@@ -124,18 +149,17 @@ function render(): void {
     ?.setAttribute('content', d['admin.metaDescription'])
 
   if (session.status === 'checking') {
-    root.replaceChildren(shell(d['admin.title'], d['admin.subtitle'], notice(d['admin.checking'])))
+    root.replaceChildren(shell(d['admin.title'], notice(d['admin.checking'])))
     return
   }
   if (session.status === 'no-backend') {
-    root.replaceChildren(shell(d['admin.title'], d['admin.subtitle'], notice(d['admin.errorNoBackend'], true)))
+    root.replaceChildren(shell(d['admin.title'], notice(d['admin.errorNoBackend'], true)))
     return
   }
   if (!session.configured) {
     root.replaceChildren(
       shell(
         d['admin.title'],
-        d['admin.subtitle'],
         notice(d['admin.errorNotConfigured'].replace('{missing}', session.missing.join('、')), true),
       ),
     )
@@ -150,7 +174,6 @@ function render(): void {
       root.replaceChildren(
         shell(
           d['admin.panelTitle'],
-          d['admin.panelSubtitle'],
           notice(error instanceof Error ? error.message : String(error), true),
         ),
       )
@@ -161,7 +184,6 @@ function render(): void {
   root.replaceChildren(
     shell(
       d['admin.title'],
-      d['admin.subtitle'],
       renderLogin((expiresAt) => {
         session = { status: 'ready', authenticated: true, configured: true, expiresAt, missing: [] }
         render()

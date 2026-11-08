@@ -65,7 +65,6 @@ export const en: Dict = {
   'admin.metaDescription': 'Admin sign-in.',
 
   'admin.title': 'Admin sign-in',
-  'admin.subtitle': 'Enter your username and password, then pass the Cap check',
   'admin.username': 'Username',
   'admin.usernamePlaceholder': 'Admin username',
   'admin.password': 'Password',
@@ -81,7 +80,6 @@ export const en: Dict = {
   'admin.errorNotConfigured': 'Backend is not fully configured. Missing: {missing}',
 
   'admin.panelTitle': 'Signed in',
-  'admin.panelSubtitle': 'Session is valid',
   'admin.panelBody': 'Content management will live here. This round only wired up the sign-in flow.',
   'admin.sessionExpires': 'Session expires',
   'admin.signOut': 'Sign out',
