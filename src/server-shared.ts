@@ -18,6 +18,8 @@ export interface ServerEnv {
   ADMIN_KV?: KvStore
   /** 后台登录密码。 */
   ADMIN_PASSWORD?: string
+  /** 后台登录用户名；缺省为 admin（见 admin-shared.ts 的 DEFAULT_ADMIN_USERNAME）。 */
+  ADMIN_USERNAME?: string
   /** 可选：会话签名密钥。缺省时由 CAP_SECRET 派生（域分离）。 */
   ADMIN_SESSION_SECRET?: string
   /** 拉取 GitHub 公开仓库快照用（后台的「刷新快照」按钮）。 */

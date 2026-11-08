@@ -5,6 +5,9 @@
 #   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 CAP_SECRET=replace-with-a-long-random-string
 
+# 后台登录用户名（不设则用默认值 admin）
+ADMIN_USERNAME=admin
+
 # 后台登录密码（本地不设则用仅本机的兜底值）
 ADMIN_PASSWORD=replace-with-your-admin-password
 

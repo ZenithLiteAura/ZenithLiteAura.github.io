@@ -71,6 +71,7 @@ function resolveEnv(): { env: ServerEnv; notes: string[] } {
     env: {
       CAP_SECRET: secret ?? DEV_FALLBACK_SECRET,
       ADMIN_PASSWORD: password ?? DEV_FALLBACK_PASSWORD,
+      ADMIN_USERNAME: process.env.ADMIN_USERNAME ?? vars.ADMIN_USERNAME,
       ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET ?? vars.ADMIN_SESSION_SECRET,
       GITHUB_TOKEN: process.env.GITHUB_TOKEN ?? vars.GITHUB_TOKEN,
       ADMIN_KV: new MemoryKv(),

@@ -8,6 +8,7 @@ import {
   ADMIN_API_BASE,
   ADMIN_CAP_SCOPE,
   CAP_TOKEN_TTL_MS,
+  DEFAULT_ADMIN_USERNAME,
   LOGIN_MAX_ATTEMPTS,
   LOGIN_MAX_FAILURES,
   LOGIN_WINDOW_SECONDS,
@@ -121,19 +122,35 @@ export async function hasAdminSession(request: Request, env: ServerEnv): Promise
   return (await verifySession(env, token)) !== null
 }
 
-/* --------------------------- 密码与限流 --------------------------- */
+/* --------------------------- 凭据与限流 --------------------------- */
 
 /**
  * 恒定时间比对：两边都过一遍 HMAC，得到等长摘要再比较，
- * 这样既不泄露密码长度，也不会有提前 return。
+ * 这样既不泄露长度，也不会有提前 return。
+ *
+ * 用户名和密码都要比对，而且**两边都算完再合并结果**——
+ * 不能因为用户名不对就提前返回，否则时序上能区分出「用户名对了」。
+ * 用户名没配就落在默认值 `admin` 上。
  */
-async function passwordMatches(env: ServerEnv, provided: string): Promise<boolean> {
-  const expected = env.ADMIN_PASSWORD ?? ''
-  if (!expected) return false
+async function credentialsMatch(
+  env: ServerEnv,
+  providedUser: string,
+  providedPassword: string,
+): Promise<boolean> {
+  const expectedPassword = env.ADMIN_PASSWORD ?? ''
+  if (!expectedPassword) return false
+  const expectedUser = env.ADMIN_USERNAME || DEFAULT_ADMIN_USERNAME
+
   const key = await sessionKey(env)
-  const providedMac = toBase64Url(await hmac(key, `password|${provided}`))
-  const expectedMac = toBase64Url(await hmac(key, `password|${expected}`))
-  return constantTimeEqual(providedMac, expectedMac)
+  const userOk = constantTimeEqual(
+    toBase64Url(await hmac(key, `username|${providedUser}`)),
+    toBase64Url(await hmac(key, `username|${expectedUser}`)),
+  )
+  const passwordOk = constantTimeEqual(
+    toBase64Url(await hmac(key, `password|${providedPassword}`)),
+    toBase64Url(await hmac(key, `password|${expectedPassword}`)),
+  )
+  return userOk && passwordOk
 }
 
 function clientIp(request: Request): string {
@@ -224,10 +241,12 @@ async function login(request: Request, env: ServerEnv): Promise<Response> {
     })
   }
 
-  const body = (await request.json().catch(() => null)) as { password?: string; capToken?: string } | null
+  const body = (await request.json().catch(() => null)) as
+    | { username?: string; password?: string; capToken?: string }
+    | null
   const fail = async (): Promise<Response> => {
     await recordFailure(kv, ip)
-    // 不区分「密码错」还是「验证码错」
+    // 不区分「用户名错」「密码错」还是「验证码错」
     return jsonResponse({ error: 'invalid_credentials' }, 401)
   }
 
@@ -238,7 +257,9 @@ async function login(request: Request, env: ServerEnv): Promise<Response> {
   if (!(await kv.get(tokenKey))) return fail()
   await kv.delete(tokenKey)
 
-  if (!(await passwordMatches(env, String(body.password ?? '')))) return fail()
+  if (!(await credentialsMatch(env, String(body.username ?? ''), String(body.password ?? '')))) {
+    return fail()
+  }
 
   await clearFailures(kv, ip)
   const { token, expiresAt } = await signSession(env)

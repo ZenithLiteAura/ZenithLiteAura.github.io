@@ -23,4 +23,10 @@ export const LOGIN_WINDOW_SECONDS = 900
 export const LOGIN_MAX_ATTEMPTS = 10
 export const LOGIN_MAX_FAILURES = 5
 
+/**
+ * 后台用户名默认值。想换的话设置 ADMIN_USERNAME（wrangler secret / .dev.vars）。
+ * 用户名本身不算密钥，真正的门是「密码 + 验证码 + 限流」。
+ */
+export const DEFAULT_ADMIN_USERNAME = 'admin'
+
 export const isAdminApiPath = (pathname: string): boolean => pathname.startsWith(ADMIN_API_BASE)

@@ -5,11 +5,9 @@ import { dict } from '../i18n'
 import { state } from '../store'
 
 /**
- * 登录表单。
+ * 登录表单：用户名 + 密码 + **内联** Cap 验证码。
  *
- * 验证码用 Cap 的**浮动模式**：`<cap-widget>` 平时不占位（脚本会把它 display:none），
- * 点「登录」时它从按钮上方弹入并立刻开始解题，解完把 token 写到按钮的 data-cap-token，
- * 再自动重新点一次按钮 —— 这次才真正触发 submit。
+ * 验证码就是表单里一个常驻的框，要自己点掉；不弹浮层、也不自动提交。
  */
 
 interface LoginErrorBody {
@@ -33,6 +31,15 @@ export function renderLogin(onSuccess: (expiresAt: number | null) => void): HTML
   const widget = createWidget()
 
   const status = h('p', { class: 'admin-status', role: 'status' })
+  const username = h('input', {
+    type: 'text',
+    id: 'admin-username',
+    class: 'admin-input',
+    autocomplete: 'username',
+    placeholder: d['admin.usernamePlaceholder'],
+    'aria-label': d['admin.username'],
+    spellcheck: 'false',
+  })
   const password = h('input', {
     type: 'password',
     id: 'admin-password',
@@ -44,12 +51,12 @@ export function renderLogin(onSuccess: (expiresAt: number | null) => void): HTML
   const submit = h('button', {
     type: 'submit',
     class: 'btn btn--primary admin-submit',
-    'data-cap-floating': '#admin-cap',
-    'data-cap-floating-position': 'top',
     text: d['admin.signIn'],
   })
 
   const form = h('form', { class: 'admin-form', novalidate: true }, [
+    h('label', { class: 'admin-label', for: 'admin-username', text: d['admin.username'] }),
+    username,
     h('label', { class: 'admin-label', for: 'admin-password', text: d['admin.password'] }),
     password,
     widget,
@@ -62,29 +69,14 @@ export function renderLogin(onSuccess: (expiresAt: number | null) => void): HTML
     status.setAttribute('data-kind', kind)
   }
 
-  /** 凭证已被服务端消耗，必须让用户重新解一次。 */
-  const resetCaptcha = (): void => {
-    submit.removeAttribute('data-cap-token')
-    submit.removeAttribute('data-cap-pending')
-    widget.reset()
-  }
-
   const handleSubmit = async (): Promise<void> => {
-    const token = widget.token ?? submit.getAttribute('data-cap-token') ?? ''
-
+    // 内联模式下验证码要用户自己点，没解就直接提交会拿不到 token
+    const token = widget.token ?? ''
     if (!token) {
-      // 在密码框直接回车时浮动流程还没跑过：替他点一次触发按钮。
-      // 只自动触发一次，避免浮动脚本没加载时无限循环。
-      if (submit.getAttribute('data-cap-pending') === '1') {
-        setStatus(d['admin.errorGeneric'], 'error')
-        return
-      }
-      submit.setAttribute('data-cap-pending', '1')
-      submit.click()
+      setStatus(d['admin.errorCaptchaRequired'], 'error')
       return
     }
 
-    submit.removeAttribute('data-cap-pending')
     submit.setAttribute('disabled', '')
     setStatus(d['admin.signingIn'])
 
@@ -92,9 +84,11 @@ export function renderLogin(onSuccess: (expiresAt: number | null) => void): HTML
       const response = await fetch(`${ADMIN_API_BASE}login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ password: password.value, capToken: token }),
+        body: JSON.stringify({ username: username.value, password: password.value, capToken: token }),
       })
-      const data = (await response.json().catch(() => null)) as (LoginErrorBody & { ok?: boolean; expiresAt?: number }) | null
+      const data = (await response.json().catch(() => null)) as
+        | (LoginErrorBody & { ok?: boolean; expiresAt?: number })
+        | null
 
       if (response.ok && data?.ok) {
         onSuccess(data.expiresAt ?? null)
@@ -110,7 +104,7 @@ export function renderLogin(onSuccess: (expiresAt: number | null) => void): HTML
           'error',
         )
       } else {
-        // 服务端故意不区分是密码错还是验证码错
+        // 服务端故意不区分是用户名错、密码错还是验证码错
         setStatus(d['admin.errorGeneric'], 'error')
       }
       password.select()
@@ -118,7 +112,8 @@ export function renderLogin(onSuccess: (expiresAt: number | null) => void): HTML
       setStatus(d['admin.errorNoBackend'], 'error')
     } finally {
       submit.removeAttribute('disabled')
-      resetCaptcha()
+      // 凭证已被服务端消耗（或本次失败），必须重新解一次
+      widget.reset()
     }
   }
 

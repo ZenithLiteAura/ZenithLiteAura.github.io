@@ -198,6 +198,7 @@ npx wrangler versions upload --dry-run # 预览：校验配置能解析
 ```bash
 npx wrangler secret put CAP_SECRET        # 至少 16 字节的高熵随机串
 npx wrangler secret put ADMIN_PASSWORD    # 后台登录密码（见「/admin 后台」一节）
+npx wrangler secret put ADMIN_USERNAME    # 后台登录用户名，可选；不设则为 admin
 npx wrangler kv namespace create ADMIN_KV # 绑定名必须是 ADMIN_KV，把返回的 id 填进 wrangler.jsonc
 ```
 
@@ -218,13 +219,12 @@ npx wrangler kv namespace create ADMIN_KV # 绑定名必须是 ADMIN_KV，把返
 
 只在 Cloudflare Worker 上可用；从 GitHub Pages 打开会提示「需要后端」。
 
-登录流程：填密码 → 点「登录」→ Cap **浮动模式**从按钮上方弹入并自动解题 →
-解完把 token 写到按钮上并**自动重新触发提交** → 服务端校验「一次性凭证 + 密码 + 限流」→
-下发 `HttpOnly` 会话 cookie。
+登录流程：填**用户名 + 密码** → 点掉表单里那个**内联的 Cap 验证码** → 点「登录」→
+服务端校验「一次性凭证 + 用户名 + 密码 + 限流」→ 下发 `HttpOnly` 会话 cookie。
 
-用浮动模式的原因：控件平时不占位，点按钮才弹出，解完自动继续提交——正是 Cap 官方 demo 的交互。
-点击动画（对勾用 `stroke-dashoffset` 0.3s 画出、失败时 `cap-shake` 抖动 0.5s）由 cap-widget 自带，
-不需要自己实现。
+验证码是表单里一个常驻的框（不是浮层）：没点掉就提交只会提示「请先完成验证码」，不会发请求。
+用户名不设 `ADMIN_USERNAME` 时默认是 `admin`；用户名和密码都是两边各过一遍 HMAC 再比等长摘要，
+且**两者都算完才合并结果**——不会因为用户名错就提前返回（否则时序上能区分出「用户名对了」）。
 
 ### 能改什么（内容管理）
 
@@ -260,6 +260,7 @@ npx wrangler secret put GITHUB_TOKEN    # 建议用只授这一个账号公开�
 | 验证码 | Cap，独立 `scope: 'admin'`，与公开 `/verify/` 完全隔离 |
 | 凭证 | 解出后存 KV，登录时**一次性消耗**（用 `sha256(整串 token)` 作键，不依赖 capjs-core 的 token 格式） |
 | 密码 | Worker secret；两边各过一遍 HMAC 再比等长摘要（不泄露长度、无提前返回） |
+| 用户名 | 同上；`ADMIN_USERNAME` 可配，不设则默认 `admin` |
 | 限流 | 同一 IP 15 分钟最多 10 次；连续失败 5 次锁定 → `429` + `Retry-After` |
 | 会话 | HMAC-SHA256，密钥由 `CAP_SECRET` 域分离派生（可用 `ADMIN_SESSION_SECRET` 覆盖） |
 | Cookie | `HttpOnly + SameSite=Strict + Path=/admin`，7 天 |

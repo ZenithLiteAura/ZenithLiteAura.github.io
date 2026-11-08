@@ -6,8 +6,6 @@ import '../styles/cap-widget-theme.css'
 import './admin.css'
 
 import 'cap-widget'
-// 浮动模式脚本：IIFE，副作用导入即可（该包没有 exports 字段，所以子路径可达）
-import 'cap-widget/cap-floating.min.js'
 
 import { ADMIN_API_BASE } from './admin-shared'
 import { loadContentOverrides } from '../content/overrides'
