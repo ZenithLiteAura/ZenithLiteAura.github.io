@@ -1,6 +1,6 @@
 import { ADMIN_API_BASE } from './admin-shared'
 import { builtinCurated } from '../data/curated'
-import { builtinProfile } from '../data/profile'
+import { builtinProfile, profile } from '../data/profile'
 import { githubDescriptionOf, ownProjects, publicRepoCount } from '../data/projects'
 import { h } from '../dom'
 import { dict } from '../i18n'
@@ -272,7 +272,7 @@ function reposSection(d: ReturnType<typeof dict>, notify: Notify): HTMLElement {
   refreshButton.addEventListener('click', () => {
     void (async () => {
       notify(d['admin.reposRefreshing'])
-      const result = await request(`${ADMIN_API_BASE}github/snapshot`, { method: 'POST' })
+      const result = await refreshSnapshot()
       if (result.ok) await afterWrite(d, notify)
       else notify(describeError(d, result), true)
     })()
@@ -456,4 +456,48 @@ export function resetPanelCache(): void {
   i18nOnlyOverridden = false
   flashState = { text: '', error: false }
   flashElement = null
+}
+
+/**
+ * 刷新 GitHub 快照。
+ *
+ * 优先让**浏览器**直连 GitHub 公开 API：不需要 token，也不依赖 Workers 的出口
+ * （线上实测 Workers 到 api.github.com 偶尔返回 525 边缘 TLS 握手失败）。
+ * 浏览器这条路失败时，再回退到服务端直连（需要 GITHUB_TOKEN）。
+ */
+async function refreshSnapshot(): Promise<{ ok: boolean; status: number; data: unknown }> {
+  const browserError = await (async (): Promise<string | null> => {
+    try {
+      const url = `https://api.github.com/users/${encodeURIComponent(profile.login)}/repos?per_page=100&sort=pushed`
+      const response = await fetch(url, { headers: { accept: 'application/vnd.github+json' } })
+      if (!response.ok) return `GitHub API ${response.status}`
+      const repos = await response.json()
+      const result = await request(`${ADMIN_API_BASE}github/import`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ repos }),
+      })
+      if (result.ok) return null
+      const body = result.data as { message?: string; error?: string } | null
+      return String(body?.message ?? body?.error ?? result.status)
+    } catch (error) {
+      return error instanceof Error ? error.message : String(error)
+    }
+  })()
+
+  if (browserError === null) return { ok: true, status: 200, data: { ok: true } }
+
+  // 回退：服务端直连（带 token）
+  const fallback = await request(`${ADMIN_API_BASE}github/snapshot`, { method: 'POST' })
+  if (fallback.ok) return fallback
+
+  const fallbackBody = fallback.data as { message?: string } | null
+  return {
+    ok: false,
+    status: fallback.status,
+    data: {
+      error: 'snapshot_failed',
+      message: `浏览器直连失败：${browserError}；服务端：${fallbackBody?.message ?? fallback.status}`,
+    },
+  }
 }

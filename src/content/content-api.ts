@@ -4,7 +4,7 @@ import { jsonResponse } from '../verify/cap-api.ts'
 import type { KvStore, ServerEnv } from '../server-shared.ts'
 import { contentKey, CONTENT_SECTIONS, isContentSection } from './content-shared.ts'
 import type { ContentBundle, ContentSection, StoredSection } from './content-shared.ts'
-import { fetchPublicRepos } from './github-snapshot.ts'
+import { fetchPublicRepos, shapeRepos } from './github-snapshot.ts'
 
 /**
  * 内容覆盖接口。
@@ -264,3 +264,25 @@ export async function handleSnapshotRefresh(env: ServerEnv): Promise<Response> {
 }
 
 export { en as enDictionary, zh as zhDictionary }
+
+/**
+ * 接收**浏览器**抓到的 GitHub 仓库列表并落库。
+ *
+ * 走这条是因为 Workers 到 api.github.com 的出口偶尔会 525（边缘 TLS 握手失败）；
+ * 浏览器直连公开 API 没有这个问题，而且不需要把 token 交给前端。
+ * 服务端仍然负责整形与校验，前端只是搬运 JSON。
+ */
+export async function handleSnapshotImport(request: Request, env: ServerEnv): Promise<Response> {
+  const kv = env.ADMIN_KV as KvStore
+  const body = (await request.json().catch(() => null)) as { repos?: unknown } | null
+  if (!body || !Array.isArray(body.repos)) {
+    return jsonResponse({ error: 'invalid_content', message: '需要 { repos: [...] }' }, 400)
+  }
+
+  const result = validateRepos(shapeRepos(body.repos))
+  if (!result.ok) return jsonResponse({ error: 'invalid_content', message: result.error }, 400)
+
+  const stored: StoredSection = { updatedAt: new Date().toISOString(), data: result.data }
+  await kv.put(contentKey('repos'), JSON.stringify(stored))
+  return jsonResponse({ ok: true, count: result.data.length, updatedAt: stored.updatedAt })
+}

@@ -1,7 +1,11 @@
 import { generateChallenge, validateChallenge } from 'capjs-core'
 import type { ValidateChallengeBody } from 'capjs-core'
 import { jsonResponse } from '../verify/cap-api.ts'
-import { handleAdminContent, handleSnapshotRefresh } from '../content/content-api.ts'
+import {
+  handleAdminContent,
+  handleSnapshotImport,
+  handleSnapshotRefresh,
+} from '../content/content-api.ts'
 import { kvNonceConsumer } from '../server-shared.ts'
 import type { KvStore, ServerEnv } from '../server-shared.ts'
 import {
@@ -307,8 +311,10 @@ export async function handleAdminApi(request: Request, env: ServerEnv): Promise<
     return session(request, env)
   }
 
-  // 需要登录的路由：内容读写 + 快照刷新（都必须是有效会话，否则任何人都能改站点内容）
-  if (route === 'content' || route === 'github/snapshot') {
+  // 需要登录的路由：内容读写 + 快照刷新/导入（必须有效会话，否则任何人都能改站点内容）
+  const needsAuth =
+    route === 'content' || route === 'github/snapshot' || route === 'github/import'
+  if (needsAuth) {
     const allowed = route === 'content' ? ['GET', 'PUT', 'DELETE'] : ['POST']
     if (!allowed.includes(method)) {
       return jsonResponse({ error: 'method_not_allowed' }, 405)
@@ -328,6 +334,7 @@ export async function handleAdminApi(request: Request, env: ServerEnv): Promise<
       )
     }
     if (route === 'github/snapshot') return handleSnapshotRefresh(env)
+    if (route === 'github/import') return handleSnapshotImport(request, env)
     return handleAdminContent(request, env)
   }
 
