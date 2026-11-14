@@ -57,7 +57,7 @@
   --page-max: 680px;
 }
 
-[data-theme='dark'] {
+:root[data-theme='dark'] {
   color-scheme: dark;
 
   --bg: #000000;
@@ -79,4 +79,29 @@
 
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.5);
   --shadow-float: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+/* 磷光绿（终端）主题：与首页的 term 主题同一套取值 */
+:root[data-theme='term'] {
+  color-scheme: dark;
+
+  --bg: #060b07;
+  --card: #0b130d;
+  --surface-container: #12210f;
+  --glass: rgba(6, 11, 7, 0.82);
+  --glass-edge: rgba(165, 239, 172, 0.12);
+  --dim: rgba(0, 0, 0, 0.6);
+
+  --primary: #42f581;
+  --primary-strong: #93f7a6;
+  --on-primary: #04160b;
+
+  --text: #a5efac;
+  --text-2: rgba(165, 239, 172, 0.62);
+  --text-3: rgba(165, 239, 172, 0.38);
+
+  --line: rgba(66, 245, 129, 0.18);
+  --press: rgba(66, 245, 129, 0.1);
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-float: 0 16px 40px -10px rgba(0, 0, 0, 0.8);
 }

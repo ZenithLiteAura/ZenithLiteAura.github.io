@@ -19,7 +19,7 @@
   background:var(--bg); color:var(--text); min-height:100vh;
 }
 
-[data-theme='dark'] .verify-shell{
+:root[data-theme='dark'] .verify-shell{
   --bg:#171310; --bg-2:#1F1A15; --card:#1F1A15; --surface-container:#241D16;
   --glass:rgba(23,19,16,.84); --glass-edge:rgba(255,255,255,.08);
   --line:#2E2820; --dim:rgba(0,0,0,.5); --press:rgba(255,255,255,.06);
@@ -130,7 +130,7 @@
 /* ---------- Driftcha 换皮：走它自己的 --dc-* 变量 ---------- */
 .verify-shell #driftcha .driftcha{
   --dc-bg: var(--bg-2);
-  --dc-surface: var(--bg-3, #EBE5D8);
+  --dc-surface: var(--surface-container);
   --dc-surface-hover: var(--line);
   --dc-border: var(--line);
   --dc-border-strong: var(--line-2, #CDC2AB);
@@ -149,3 +149,10 @@
 }
 .verify-shell #driftcha .driftcha .dc-title,
 .verify-shell #driftcha .driftcha h2{ font-family: inherit; font-weight: 500 }
+/* 磷光绿主题下的页面令牌 */
+:root[data-theme='term'] .verify-shell{
+  --bg:#060B07; --bg-2:#0B130D; --card:#0B130D; --surface-container:#12210F;
+  --glass:rgba(6,11,7,.84); --line:#173321; --press:rgba(66,245,129,.1);
+  --text:#A5EFAC; --text-2:#5EA96B; --text-3:#3E7048;
+  --primary:#42F581; --primary-strong:#93F7A6; --on-primary:#04160B;
+}

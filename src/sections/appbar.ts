@@ -7,10 +7,11 @@ import type { Lang, ThemePref } from '../types'
 
 const LANGS: Lang[] = ['zh', 'en']
 const LANG_LABELS: Record<Lang, string> = { zh: '中', en: 'EN' }
-const THEMES: ThemePref[] = ['light', 'dark', 'system']
+const THEMES: ThemePref[] = ['light', 'dark', 'term', 'system']
 const THEME_ICONS: Record<ThemePref, string> = {
   light: ICON.sun,
   dark: ICON.moon,
+  term: ICON.terminal,
   system: ICON.auto,
 }
 

@@ -31,7 +31,7 @@ function detectLang(): Lang {
 
 function detectTheme(): ThemePref {
   const saved = readStorage(THEME_KEY)
-  return saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system'
+  return saved === 'light' || saved === 'dark' || saved === 'term' || saved === 'system' ? saved : 'system'
 }
 
 const darkQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -48,7 +48,9 @@ export function resolveDark(pref: ThemePref): boolean {
 
 /** 把主题写到 <html data-theme>，配色全部由 CSS 令牌接管。 */
 export function applyTheme(): void {
-  document.documentElement.dataset.theme = resolveDark(state.theme) ? 'dark' : 'light'
+  // term（磷光绿）是独立的一套令牌，不走明暗二分
+  document.documentElement.dataset.theme =
+    state.theme === 'term' ? 'term' : resolveDark(state.theme) ? 'dark' : 'light'
 }
 
 export function setLang(lang: Lang): void {

@@ -11,6 +11,7 @@ export const zh = {
   'theme.light': '浅色',
   'theme.dark': '深色',
   'theme.system': '跟随系统',
+  'theme.term': '磷光',
 
   'hero.badge.repos': '公开仓库',
   'hero.badge.joined': '加入于',

@@ -592,7 +592,7 @@ a.chip:active {
   white-space: nowrap;
 }
 
-[data-theme='dark'] .todo {
+:root[data-theme='dark'] .todo {
   background: rgba(255, 159, 10, 0.2);
   color: #ffc061;
 }

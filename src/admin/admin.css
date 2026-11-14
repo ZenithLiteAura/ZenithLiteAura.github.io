@@ -109,7 +109,7 @@
   color: #d42f2f;
 }
 
-[data-theme='dark'] .admin-status[data-kind='error'] {
+:root[data-theme='dark'] .admin-status[data-kind='error'] {
   color: #ff7676;
 }
 

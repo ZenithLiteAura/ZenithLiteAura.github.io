@@ -2,7 +2,7 @@
 export type Lang = 'zh' | 'en'
 
 /** 主题偏好：浅色 / 深色 / 跟随系统。 */
-export type ThemePref = 'light' | 'dark' | 'system'
+export type ThemePref = 'light' | 'dark' | 'term' | 'system'
 
 /** 一条中英双语文案。 */
 export interface LocalizedText {

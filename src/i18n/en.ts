@@ -14,6 +14,7 @@ export const en: Dict = {
   'theme.light': 'Light',
   'theme.dark': 'Dark',
   'theme.system': 'System',
+  'theme.term': 'phosphor',
 
   'hero.badge.repos': 'public repos',
   'hero.badge.joined': 'joined',
