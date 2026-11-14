@@ -413,7 +413,6 @@ svg{ flex:none }
       <span class="sr-only" data-i18n="hero.sr">你好，我是 ZenithLiteAura。</span>
       <span aria-hidden="true"><span id="twText"></span><span class="tw-cursor"></span></span>
     </h1>
-    <p class="lede" data-i18n="hero.lede">平时主要写 Python，闲下来的时间基本都在折腾。邮箱、相册这些能自建的东西，都搬到了自己的服务器上，跑通了就顺手丢到 GitHub。想聊什么发邮件就行。</p>
     <p class="hero-meta mono" data-i18n="hero.meta"><b>Python</b> · 自建服务 · <b>0</b> trackers</p>
   </section>
 
@@ -423,7 +422,6 @@ svg{ flex:none }
   <!-- 片段 -->
   <section id="snippets" class="sec wrap">
     <div class="sec-head reveal"><span class="idx mono">01</span><h2 data-i18n="sec.snippets">片段</h2><span class="rule"></span></div>
-    <p class="sec-sub reveal" data-i18n="sec.snippets.sub">站点里两段自己写的代码，放在这儿备查。</p>
     <div class="snippet-tabs mono" id="snippetTabs" role="tablist" aria-label="snippets"></div>
     <div id="snippetView"></div>
   </section>
@@ -431,14 +429,13 @@ svg{ flex:none }
   <!-- 开源计数 -->
   <section id="oss" class="sec wrap">
     <div class="sec-head reveal"><span class="idx mono">02</span><h2 data-i18n="sec.oss">项目</h2><span class="rule"></span></div>
-    <p class="sec-sub reveal" data-i18n="sec.oss.sub">星数取自 GitHub 公开接口；取不到就显示上次的数字。</p>
     <p class="oss-status mono reveal" id="ossStatus"><span class="dot"></span> querying api.github.com …</p>
     <div class="oss-list" id="ossList"></div>
   </section>
 
   <footer id="about" class="footer wrap">
     <div class="sec-head reveal"><span class="idx mono">03</span><h2 data-i18n="sec.about">关于</h2><span class="rule"></span></div>
-    <p class="about-txt reveal"><span data-i18n="about.text">我是 ZenithLiteAura。平时写 Python，也折腾能自建的东西。这个站点、验证码实验页、后台，都是自己写的。有事写信：</span>
+    <p class="about-txt reveal">
       <button class="inline-code mail-copy" id="mailCopy" type="button" data-i18n-aria="mail.copy" aria-label="复制邮箱地址">admin@zenithliteaura.site</button>
     </p>
     <div class="colo mono reveal">
@@ -484,14 +481,10 @@ const L10N = {
     'nav.snippets': '片段', 'nav.oss': '项目', 'nav.about': '关于',
     'hero.overline': '~/notes — 折腾记录',
     'hero.sr': '你好，我是 ZenithLiteAura。',
-    'hero.lede': '平时主要写 Python，闲下来的时间基本都在折腾。邮箱、相册这些能自建的东西，都搬到了自己的服务器上，跑通了就顺手丢到 GitHub。想聊什么发邮件就行。',
     'hero.meta': '<b>Python</b> · 自建服务 · <b>0</b> trackers',
     'sec.snippets': '片段',
-    'sec.snippets.sub': '站点里两段自己写的代码，放在这儿备查。',
     'sec.oss': '项目',
-    'sec.oss.sub': '星数取自 GitHub 公开接口；取不到就显示上次的数字。',
     'sec.about': '关于',
-    'about.text': '我是 ZenithLiteAura。平时写 Python，也折腾能自建的东西。这个站点、验证码实验页、后台，都是自己写的。有事写信：',
     'colo.a': 'Python · 自建服务', 'colo.b': 'Vite · TypeScript', 'colo.c': 'no trackers · no cookies',
     'mail.copy': '复制邮箱地址', 'mail.copied': '已复制，来聊聊',
     'copy.aria': '复制代码', 'copy.label': '复制', 'copy.done': '已复制', 'copy.fail': '失败',
@@ -499,7 +492,7 @@ const L10N = {
     'oss.live': 'live · api.github.com · {n} calls · {ms} ms',
     'oss.partial': 'partial · {ok}/{n} answered · rest cached',
     'oss.offline': 'offline · network unavailable · last known counts',
-    'phrases': ['你好，我是 ZenithLiteAura', '路漫漫其修远兮，吾将上下而求索。', '纸上得来终觉浅，绝知此事要躬行。', '博观而约取，厚积而薄发。', 'Talk is cheap. Show me the code.']
+    'phrases': ['你好，我是 ZenithLiteAura', '路漫漫其修远兮，吾将上下而求索。', '纸上得来终觉浅，绝知此事要躬行。', '博观而约取，厚积而薄发。', '大音希声，大象无形。', '不积跬步，无以至千里。', '工欲善其事，必先利其器。', '长风破浪会有时，直挂云帆济沧海。', 'Talk is cheap. Show me the code.'],
   },
   en: {
     'title': 'ZenithLiteAura · field notes',
@@ -507,14 +500,10 @@ const L10N = {
     'nav.snippets': 'snippets', 'nav.oss': 'projects', 'nav.about': 'about',
     'hero.overline': '~/notes — field notes',
     'hero.sr': 'Hi, I am ZenithLiteAura — mostly Python, and tinkering with the rest of my time.',
-    'hero.lede': 'I mostly write Python and tinker with the rest of my time. Mail, photos, anything I can host myself ends up on my own server, and whatever survives gets pushed to GitHub. Feel free to email me.',
     'hero.meta': '<b>Python</b> · self-hosted · <b>0</b> trackers',
     'sec.snippets': 'snippets',
-    'sec.snippets.sub': 'Two pieces of this site\u2019s own code, kept here for reference.',
     'sec.oss': 'projects',
-    'sec.oss.sub': 'Star counts come from GitHub\u2019s public API; if it cannot be reached, the last known numbers stay.',
     'sec.about': 'about',
-    'about.text': 'I am ZenithLiteAura. I write Python, and self-host what I can. The homepage, the CAPTCHA playground and the admin panel here are all mine. Email is easiest:',
     'colo.a': 'Python · self-hosted', 'colo.b': 'Vite · TypeScript', 'colo.c': 'no trackers · no cookies',
     'mail.copy': 'copy email address', 'mail.copied': 'copied — come say hi',
     'copy.aria': 'copy code', 'copy.label': 'copy', 'copy.done': 'copied', 'copy.fail': 'failed',
@@ -522,7 +511,7 @@ const L10N = {
     'oss.live': 'live · api.github.com · {n} calls · {ms} ms',
     'oss.partial': 'partial · {ok}/{n} answered · rest cached',
     'oss.offline': 'offline · network unavailable · last known counts',
-    'phrases': ['Hello, I am ZenithLiteAura', 'Talk is cheap. Show me the code.', 'Make it work, make it right, make it fast.', 'Simple is hard.', 'Build it, and you will understand it.']
+    'phrases': ['Hello, I am ZenithLiteAura', 'Talk is cheap. Show me the code.', 'First, solve the problem. Then write the code.', 'Premature optimization is the root of all evil.', 'Simplicity is prerequisite for reliability.', 'Programs must be written for people to read.', 'Make it work, make it right, make it fast.'],
   }
 };
 const T = () => L10N[LANG];
