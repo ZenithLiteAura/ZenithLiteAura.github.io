@@ -116,6 +116,10 @@ svg{ flex:none }
 .tt-btn{ position:relative; z-index:1; width:36px; height:28px; display:grid; place-items:center; border-radius:999px; color:var(--ink-2); transition:color .3s }
 .tt-btn svg{ width:15px; height:15px }
 .tt-btn.on{ color:var(--bg) }
+/* 语言开关：和主题切换同一视觉语言，但单独用 .lg-btn，避免干扰主题滑块的索引计算 */
+.lang-sw{ position:relative; display:flex; padding:3px; border:1px solid var(--line); border-radius:999px; background:var(--bg-2) }
+.lg-btn{ width:34px; height:28px; display:grid; place-items:center; border-radius:999px; font-size:.7rem; font-weight:600; letter-spacing:.02em; color:var(--ink-2); transition:color .3s, background-color .3s }
+.lg-btn[aria-pressed="true"]{ color:var(--bg); background:var(--ink) }
 
 /* ============ Hero ============ */
 .hero{ padding-top:clamp(4.5rem,11vh,7.5rem) }
@@ -372,12 +376,16 @@ svg{ flex:none }
 
 <header class="nav" id="nav">
   <div class="wrap nav-inner">
-    <a href="#top" class="logo mono" aria-label="back to top"><span id="logoTxt">zenith@aura:~</span><span class="logo-p">$</span></a>
+    <a href="#top" class="logo mono" aria-label="back to top"><span id="logoTxt">zenithliteaura:~</span><span class="logo-p">$</span></a>
     <nav class="nav-links mono" aria-label="site nav">
-      <a href="#snippets">片段</a><a href="#oss">项目</a><a href="#about">关于</a>
+      <a href="#snippets" data-i18n="nav.snippets">片段</a><a href="#oss" data-i18n="nav.oss">项目</a><a href="#about" data-i18n="nav.about">关于</a>
     </nav>
     <div class="nav-right">
-      <a class="gh-link" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">
+      <div class="lang-sw" role="group" aria-label="语言 / language">
+        <button class="lg-btn" type="button" data-lang="zh" aria-pressed="true">中</button>
+        <button class="lg-btn" type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="gh-link" href="https://github.com/ZenithLiteAura" target="_blank" rel="noopener" aria-label="GitHub">
         <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
       </a>
       <div class="tt" role="radiogroup" aria-label="theme">
@@ -399,14 +407,14 @@ svg{ flex:none }
 <main id="main">
   <!-- Hero：终端命令 → 打字机问候 -->
   <section class="hero wrap">
-    <p class="overline mono">~/notes — 折腾记录</p>
-    <p class="tw-cmd mono">zenith@aura:~<span class="accent">$</span> ./hello --interactive</p>
+    <p class="overline mono" data-i18n="hero.overline">~/notes — 折腾记录</p>
+    <p class="tw-cmd mono">zenithliteaura:~<span class="accent">$</span> ./hello --interactive</p>
     <h1 class="tw-line" id="twLine" title="click to complete instantly">
-      <span class="sr-only">你好，我是 ZenithLiteAura —— 主要写 Python，闲下来都在折腾。</span>
+      <span class="sr-only" data-i18n="hero.sr">你好，我是 ZenithLiteAura —— 主要写 Python，闲下来都在折腾。</span>
       <span aria-hidden="true"><span id="twText"></span><span class="tw-cursor"></span></span>
     </h1>
-    <p class="lede">平时主要写 Python，闲下来的时间基本都在折腾。邮箱、相册这些能自建的东西，都搬到了自己的服务器上，跑通了就顺手丢到 GitHub。想聊什么发邮件就行。</p>
-    <p class="hero-meta mono"><b>Python</b> · 自建服务 · <b>0</b> trackers</p>
+    <p class="lede" data-i18n="hero.lede">平时主要写 Python，闲下来的时间基本都在折腾。邮箱、相册这些能自建的东西，都搬到了自己的服务器上，跑通了就顺手丢到 GitHub。想聊什么发邮件就行。</p>
+    <p class="hero-meta mono" data-i18n="hero.meta"><b>Python</b> · 自建服务 · <b>0</b> trackers</p>
   </section>
 
   <div class="ticker" aria-hidden="true"><div class="ticker-inner mono" id="tickerInner"></div></div>
@@ -414,33 +422,33 @@ svg{ flex:none }
 
   <!-- 片段 -->
   <section id="snippets" class="sec wrap">
-    <div class="sec-head reveal"><span class="idx mono">01</span><h2>片段</h2><span class="rule"></span></div>
-    <p class="sec-sub reveal">这个站点自己的两段真实代码。复制按钮落地时会闪一下 —— 这就是全部测试。</p>
+    <div class="sec-head reveal"><span class="idx mono">01</span><h2 data-i18n="sec.snippets">片段</h2><span class="rule"></span></div>
+    <p class="sec-sub reveal" data-i18n="sec.snippets.sub">这个站点自己的两段真实代码。复制按钮落地时会闪一下 —— 这就是全部测试。</p>
     <div class="snippet-tabs mono" id="snippetTabs" role="tablist" aria-label="snippets"></div>
     <div id="snippetView"></div>
   </section>
 
   <!-- 开源计数 -->
   <section id="oss" class="sec wrap">
-    <div class="sec-head reveal"><span class="idx mono">02</span><h2>项目</h2><span class="rule"></span></div>
-    <p class="sec-sub reveal">星数取自 GitHub 公开 API（无 token、无追踪）。网络不通时显示上次的数字，不会留个空壳。</p>
+    <div class="sec-head reveal"><span class="idx mono">02</span><h2 data-i18n="sec.oss">项目</h2><span class="rule"></span></div>
+    <p class="sec-sub reveal" data-i18n="sec.oss.sub">星数取自 GitHub 公开 API（无 token、无追踪）。网络不通时显示上次的数字，不会留个空壳。</p>
     <p class="oss-status mono reveal" id="ossStatus"><span class="dot"></span> querying api.github.com …</p>
     <div class="oss-list" id="ossList"></div>
   </section>
 
   <footer id="about" class="footer wrap">
-    <div class="sec-head reveal"><span class="idx mono">03</span><h2>关于</h2><span class="rule"></span></div>
-    <p class="about-txt reveal">我是 ZenithLiteAura，主要写 Python。这个站点是 Vite 多页工程：主页、一个验证码实验页、还有一个能改内容和登录的后台。想聊什么、或者只是路过，都欢迎写信：
-      <button class="inline-code mail-copy" id="mailCopy" type="button" aria-label="复制邮箱地址">admin@zenithliteaura.site</button>
+    <div class="sec-head reveal"><span class="idx mono">03</span><h2 data-i18n="sec.about">关于</h2><span class="rule"></span></div>
+    <p class="about-txt reveal"><span data-i18n="about.text">我是 ZenithLiteAura，主要写 Python。这个站点是 Vite 多页工程：主页、一个验证码实验页、还有一个能改内容和登录的后台。想聊什么、或者只是路过，都欢迎写信：</span>
+      <button class="inline-code mail-copy" id="mailCopy" type="button" data-i18n-aria="mail.copy" aria-label="复制邮箱地址">admin@zenithliteaura.site</button>
     </p>
     <div class="colo mono reveal">
-      <span>Python · 自建服务</span>
-      <span>Vite · TypeScript</span>
-      <span>no trackers · no cookies</span>
+      <span data-i18n="colo.a">Python · 自建服务</span>
+      <span data-i18n="colo.b">Vite · TypeScript</span>
+      <span data-i18n="colo.c">no trackers · no cookies</span>
       <span class="sys-clock">sys time <b id="clock">--:--:--</b></span>
     </div>
     <p class="eof mono reveal" aria-hidden="true">[ EOF ]</p>
-    <p class="copyright mono">© 2025 ZenithLiteAura</p>
+    <p class="copyright mono">© 2026 ZenithLiteAura</p>
   </footer>
 </main>
 
@@ -464,6 +472,60 @@ svg{ flex:none }
 const $  = (s, c=document) => c.querySelector(s);
 const $$ = (s, c=document) => [...c.querySelectorAll(s)];
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- 中英切换：字典 + 当前语言 ---------- */
+const LANG_KEY = 'zla:home-lang';
+let LANG = 'zh';
+try { if (localStorage.getItem(LANG_KEY) === 'en') LANG = 'en'; } catch(_){}
+const L10N = {
+  zh: {
+    'title': 'ZenithLiteAura · 折腾记录',
+    'desc': 'ZenithLiteAura 的个人主页：主要写 Python，闲下来都在折腾；能自建的就自建。',
+    'nav.snippets': '片段', 'nav.oss': '项目', 'nav.about': '关于',
+    'hero.overline': '~/notes — 折腾记录',
+    'hero.sr': '你好，我是 ZenithLiteAura —— 主要写 Python，闲下来都在折腾。',
+    'hero.lede': '平时主要写 Python，闲下来的时间基本都在折腾。邮箱、相册这些能自建的东西，都搬到了自己的服务器上，跑通了就顺手丢到 GitHub。想聊什么发邮件就行。',
+    'hero.meta': '<b>Python</b> · 自建服务 · <b>0</b> trackers',
+    'sec.snippets': '片段',
+    'sec.snippets.sub': '这个站点自己的两段真实代码。复制按钮落地时会闪一下 —— 这就是全部测试。',
+    'sec.oss': '项目',
+    'sec.oss.sub': '星数取自 GitHub 公开 API（无 token、无追踪）。网络不通时显示上次的数字，不会留个空壳。',
+    'sec.about': '关于',
+    'about.text': '我是 ZenithLiteAura，主要写 Python。这个站点是 Vite 多页工程：主页、一个验证码实验页、还有一个能改内容和登录的后台。想聊什么、或者只是路过，都欢迎写信：',
+    'colo.a': 'Python · 自建服务', 'colo.b': 'Vite · TypeScript', 'colo.c': 'no trackers · no cookies',
+    'mail.copy': '复制邮箱地址', 'mail.copied': '已复制，来聊聊',
+    'copy.aria': '复制代码', 'copy.label': '复制', 'copy.done': '已复制', 'copy.fail': '失败',
+    'oss.querying': 'querying api.github.com …',
+    'oss.live': 'live · api.github.com · {n} calls · {ms} ms',
+    'oss.partial': 'partial · {ok}/{n} answered · rest cached',
+    'oss.offline': 'offline · network unavailable · last known counts',
+    'phrases': ['你好，我是 ZenithLiteAura。', '主要写 Python，闲下来都在折腾。', '能自建的就自建：邮箱、相册都在自己服务器上。', '跑通了就顺手丢到 GitHub。']
+  },
+  en: {
+    'title': 'ZenithLiteAura · field notes',
+    'desc': 'ZenithLiteAura — mostly Python, and tinkering with anything I can self-host.',
+    'nav.snippets': 'snippets', 'nav.oss': 'projects', 'nav.about': 'about',
+    'hero.overline': '~/notes — field notes',
+    'hero.sr': 'Hi, I am ZenithLiteAura — mostly Python, and tinkering with the rest of my time.',
+    'hero.lede': 'I mostly write Python and tinker with the rest of my time. Mail, photos, anything I can host myself ends up on my own server, and whatever survives gets pushed to GitHub. Feel free to email me.',
+    'hero.meta': '<b>Python</b> · self-hosted · <b>0</b> trackers',
+    'sec.snippets': 'snippets',
+    'sec.snippets.sub': 'Two pieces of this site\u2019s own code. The copy button flashes when it lands — that\u2019s the whole test suite.',
+    'sec.oss': 'projects',
+    'sec.oss.sub': 'Star counts come from the public GitHub API (no token, no tracking). If the network is down, the last known numbers hold the line.',
+    'sec.about': 'about',
+    'about.text': 'I am ZenithLiteAura, mostly writing Python. This site is a Vite multi-page project: a homepage, a CAPTCHA playground, and an admin panel that edits content and signs in. Want to argue about tabs versus spaces? Say hi:',
+    'colo.a': 'Python · self-hosted', 'colo.b': 'Vite · TypeScript', 'colo.c': 'no trackers · no cookies',
+    'mail.copy': 'copy email address', 'mail.copied': 'copied — come say hi',
+    'copy.aria': 'copy code', 'copy.label': 'copy', 'copy.done': 'copied', 'copy.fail': 'failed',
+    'oss.querying': 'querying api.github.com …',
+    'oss.live': 'live · api.github.com · {n} calls · {ms} ms',
+    'oss.partial': 'partial · {ok}/{n} answered · rest cached',
+    'oss.offline': 'offline · network unavailable · last known counts',
+    'phrases': ['Hello, world. I am ZenithLiteAura.', 'Mostly Python. Tinkering the rest of the time.', 'If I can self-host it, I will.', 'Whatever survives gets pushed to GitHub.']
+  }
+};
+const T = () => L10N[LANG];
 const root = document.documentElement;
 const esc  = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const fmt  = n => n.toLocaleString('en-US');
@@ -551,9 +613,9 @@ function codeBlock(filename, lang, code){
     <figcaption class="cb-head mono">
       <span class="cb-name">${esc(filename)}</span>
       <span class="cb-lang">${lang}</span>
-      <button class="copy-btn mono" type="button" aria-label="copy code">
+      <button class="copy-btn mono" type="button" data-i18n-aria="copy.aria" aria-label="复制代码">
         <span class="ic ic-copy">${IC.copy}</span><span class="ic ic-check">${IC.check}</span>
-        <span class="lbl lbl-copy">copy</span><span class="lbl lbl-done">copied</span><span class="lbl lbl-fail">failed</span>
+        <span class="lbl lbl-copy" data-i18n="copy.label">复制</span><span class="lbl lbl-done" data-i18n="copy.done">已复制</span><span class="lbl lbl-fail" data-i18n="copy.fail">失败</span>
       </button>
     </figcaption>
     <pre><code>${highlight(code, lang)}</code></pre>
@@ -698,7 +760,7 @@ document.addEventListener('click', async e => {
 const mailBtn = $('#mailCopy');
 mailBtn.addEventListener('click', async () => {
   const ok = await copyText('admin@zenithliteaura.site');
-  mailBtn.textContent = ok ? 'copied — come say hi' : 'admin@zenithliteaura.site';
+  mailBtn.textContent = ok ? T()['mail.copied'] : 'admin@zenithliteaura.site';
   clearTimeout(mailBtn._t);
   mailBtn._t = setTimeout(() => { mailBtn.textContent = 'admin@zenithliteaura.site'; }, 1800);
 });
@@ -752,15 +814,23 @@ function showSnippet(i){
 
 /* ---------- GitHub 实时星标 / Fork ---------- */
 const REPOS = [
-  { slug:'ZenithLiteAura/Pho_Community', lang:'Dart', desc:'无服务端的照片浏览与同步：照片按日期直接放在自己的 SMB / WebDAV / NFS 上，不建数据库、不需要账号。', fb:{ s:1, f:0 } },
-  { slug:'ZenithLiteAura/ZenithLiteAura.github.io', lang:'TypeScript', desc:'这个站点本身：Vite 多页 + Cloudflare Worker；/verify/ 是验证码实验页，/admin 能改内容和登录。', fb:{ s:1, f:0 } },
+  { slug:'ZenithLiteAura/Pho_Community', lang:'Dart',
+    zh:'无服务端的照片浏览与同步：照片按日期直接放在自己的 SMB / WebDAV / NFS 上，不建数据库、不需要账号。',
+    en:'Serverless photo browsing and sync: photos live on your own SMB / WebDAV / NFS storage, organised by date. No database, no account.',
+    fb:{ s:1, f:0 } },
+  { slug:'ZenithLiteAura/ZenithLiteAura.github.io', lang:'TypeScript',
+    zh:'这个站点本身：Vite 多页 + Cloudflare Worker；/verify/ 是验证码实验页，/admin 能改内容和登录。',
+    en:'This site itself: Vite multi-page + a Cloudflare Worker; /verify/ is a CAPTCHA playground, /admin edits content and signs in.',
+    fb:{ s:1, f:0 } },
 ];
- $('#ossList').innerHTML = REPOS.map((r, i) => `
+const descOf = r => (LANG === 'en' ? r.en : r.zh);
+function renderOss(){
+  $('#ossList').innerHTML = REPOS.map((r, i) => `
 <div class="reveal" style="--d:${i*90}ms">
   <a class="repo" href="https://github.com/${r.slug}" target="_blank" rel="noopener">
     <span class="repo-id">
       <span class="repo-name mono">${r.slug}<span class="repo-arrow">${IC.arrow}</span></span>
-      <span class="repo-desc">${esc(r.desc)}</span>
+      <span class="repo-desc">${esc(descOf(r) || '')}</span>
     </span>
     <span class="repo-stats mono">
       <span class="stat" title="stars">${IC.star}<b data-star>—</b></span>
@@ -769,6 +839,10 @@ const REPOS = [
     </span>
   </a>
 </div>`).join('');
+  // 重渲染后立刻标记已浮现，否则会一直停在 .reveal 的透明态
+  $$('#ossList .reveal').forEach(el => el.classList.add('in'));
+}
+renderOss();
 
 function animateNum(el, target){
   if (REDUCED){ el.textContent = fmt(target); return; }
@@ -796,6 +870,20 @@ const ossIO = new IntersectionObserver(es => {
 }, { threshold:.15 });
 ossIO.observe($('#oss'));
 
+let ossStat = { kind: 'querying', ok: 0, ms: 0 };
+function renderOssStatus(){
+  const st = $('#ossStatus');
+  if (!st) return;
+  const t = L10N[LANG];
+  const txt = ossStat.kind === 'live'
+    ? t['oss.live'].replace('{n}', REPOS.length).replace('{ms}', ossStat.ms)
+    : ossStat.kind === 'partial'
+      ? t['oss.partial'].replace('{ok}', ossStat.ok).replace('{n}', REPOS.length)
+      : ossStat.kind === 'offline' ? t['oss.offline'] : t['oss.querying'];
+  st.innerHTML = `<span class="dot"></span> ${txt}`;
+  st.classList.toggle('offline', ossStat.kind === 'offline');
+}
+
 (async function loadOSS(){
   const t0 = performance.now();
   const rs = await Promise.all(REPOS.map(async r => {
@@ -812,16 +900,11 @@ ossIO.observe($('#oss'));
   }));
   const ms = Math.max(1, Math.round(performance.now() - t0));
   const okN = rs.filter(r => r.ok).length;
-  const st = $('#ossStatus');
   ossData = rs; tryFillOSS();
-  if (okN === REPOS.length)
-    st.innerHTML = `<span class="dot"></span> live · api.github.com · ${REPOS.length} calls · ${ms} ms`;
-  else if (okN > 0)
-    st.innerHTML = `<span class="dot"></span> partial · ${okN}/${REPOS.length} answered · rest cached`;
-  else {
-    st.innerHTML = `<span class="dot"></span> offline · network unavailable · last known counts`;
-    st.classList.add('offline');
-  }
+  ossStat = okN === REPOS.length
+    ? { kind: 'live', ms }
+    : (okN > 0 ? { kind: 'partial', ok: okN, ms } : { kind: 'offline', ms });
+  renderOssStatus();
 })();
 
 /* ---------- 三态主题 ---------- */
@@ -984,6 +1067,43 @@ showSnippet(0);
 applyTT(root.dataset.theme);
  $('#metaColor').content = getComputedStyle(document.body).backgroundColor;
 reqProgress();
+
+/* ---------- 语言：应用与切换 ---------- */
+function applyLang(lang){
+  LANG = lang === 'en' ? 'en' : 'zh';
+  try { localStorage.setItem(LANG_KEY, LANG); } catch(_){}
+  const t = L10N[LANG];
+
+  root.lang = LANG === 'en' ? 'en' : 'zh-CN';
+  document.title = t['title'];
+  const md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute('content', t['desc']);
+
+  $$('[data-i18n]').forEach(el => {
+    const v = t[el.dataset.i18n];
+    if (v != null) el.innerHTML = v;
+  });
+  $$('[data-i18n-aria]').forEach(el => {
+    const v = t[el.dataset.i18nAria];
+    if (v) el.setAttribute('aria-label', v);
+  });
+  $$('.lg-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
+
+  // 打字机文案跟着换，并从头开始打
+  PHRASES.length = 0;
+  PHRASES.push(...t['phrases']);
+  pi = 0; ci = 0; del = false;
+  clearTimeout(twTimer);
+  if (REDUCED){ twText.textContent = PHRASES[0]; }
+  else { twText.textContent = ''; twTimer = setTimeout(twStep, 240); }
+
+  // 项目描述与状态行也要跟着换
+  renderOss();
+  if (ossData) tryFillOSS();
+  renderOssStatus();
+}
+$$('.lg-btn').forEach(b => b.addEventListener('click', () => applyLang(b.dataset.lang)));
+applyLang(LANG);
 })();
 </script>
 </body>
