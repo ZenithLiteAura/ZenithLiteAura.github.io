@@ -55,6 +55,21 @@ export const zh = {
   'verify.capUnavailableTitle': 'Cap 需要一个后端',
   'verify.motionLoad': '仍要加载 Driftcha',
 
+  'verify.overline': '~/lab — 验证码实验',
+  'verify.lede': '两步验证，按顺序来：先点掉人机验证，再读出噪点里漂移的数字。',
+  'verify.step1Title': '人机验证',
+  'verify.step1Sub': '点一下复选框，由 Cap 完成校验。',
+  'verify.step2Title': '噪点数字',
+  'verify.step2Sub': '数字会在动态噪点里漂移，看清楚再逐位输入。',
+  'verify.stepLocked': '通过第 01 步后自动解锁',
+  'verify.stepLockedChip': '待解锁',
+  'verify.stepWaiting': '待完成',
+  'verify.stepPassed': '已通过',
+  'verify.doneTitle': '确认是真人',
+  'verify.doneBody': '两步验证都已通过。',
+  'verify.doneMeta': '2 / 2 passed · human verified',
+  'verify.restart': '再来一次',
+
   /* ---------------- /admin/ 后台 ---------------- */
 
   'admin.metaTitle': '后台登录 · ZenithLiteAura',

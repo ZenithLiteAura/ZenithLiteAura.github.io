@@ -59,6 +59,21 @@ export const en: Dict = {
   'verify.capUnavailableTitle': 'Cap needs a backend',
   'verify.motionLoad': 'Load Driftcha anyway',
 
+  'verify.overline': '~/lab — captcha lab',
+  'verify.lede': 'Two checks, in order: clear the human check, then read the digits drifting in the noise.',
+  'verify.step1Title': 'Human check',
+  'verify.step1Sub': 'One click on the checkbox; Cap does the rest.',
+  'verify.step2Title': 'Digits in noise',
+  'verify.step2Sub': 'The digits drift through animated noise. Read them, then type each one.',
+  'verify.stepLocked': 'Unlocks after step 01',
+  'verify.stepLockedChip': 'locked',
+  'verify.stepWaiting': 'waiting',
+  'verify.stepPassed': 'passed',
+  'verify.doneTitle': 'Confirmed: human',
+  'verify.doneBody': 'Both checks passed.',
+  'verify.doneMeta': '2 / 2 passed · human verified',
+  'verify.restart': 'Run it again',
+
   /* ---------------- /admin/ ---------------- */
 
   'admin.metaTitle': 'Admin sign-in · ZenithLiteAura',

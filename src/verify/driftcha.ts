@@ -55,11 +55,12 @@ function stagesFor(lang: Lang): readonly Stage[] {
 }
 
 /** 挂载 Driftcha（浏览器模式：不传 backend，用默认的 createLocalBackend）。 */
-export function mountDriftcha(host: HTMLElement): Driftcha {
+export function mountDriftcha(host: HTMLElement, options: { onSuccess?: () => void } = {}): Driftcha {
   return createDriftcha(host, {
     theme: resolveDark(state.theme) ? 'dark' : 'light',
     messages: state.lang === 'zh' ? ZH_MESSAGES : {},
     stages: stagesFor(state.lang),
+    onSuccess: options.onSuccess,
   })
 }
 

@@ -51,16 +51,28 @@ function createCapWidget(): CapWidget {
  * 控件自己会显示「确认你是真人 / 正在验证 / 你是真人 / 出错」等状态，
  * 所以这里不再额外加一行状态文字。后端不可用时只留一行说明。
  */
-export async function mountCapSlot(host: HTMLElement): Promise<void> {
+export async function mountCapSlot(
+  host: HTMLElement,
+  onSolved?: (token: string) => void,
+): Promise<void> {
   const d = dict(state.lang)
 
   const available = await probeCapBackend()
   // 语言切换会整页重渲染，旧的 host 已经不在文档里了，直接放弃
   if (!host.isConnected) return
 
-  host.replaceChildren(
-    available
-      ? createCapWidget()
-      : h('p', { class: 'verify-callout', text: d['verify.capUnavailableTitle'] }),
-  )
+  if (!available) {
+    host.replaceChildren(h('p', { class: 'verify-callout', text: d['verify.capUnavailableTitle'] }))
+    return
+  }
+
+  const widget = createCapWidget()
+  if (onSolved) {
+    // cap-widget 解完会派发 solve 事件，detail.token 就是服务端签发的一次性凭证
+    widget.addEventListener('solve', (event) => {
+      const detail = (event as CustomEvent<{ token?: string }>).detail
+      onSolved(detail?.token ?? widget.getAttribute('data-cap-token') ?? '')
+    })
+  }
+  host.replaceChildren(widget)
 }

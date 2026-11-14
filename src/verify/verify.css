@@ -1,60 +1,151 @@
 /* ===================================================================
-   /verify/ 页面样式。
-   页面只放两个验证码本体，所以这里只有三件事：
-     1. 两个控件的纵向排布
-     2. 解除 driftcha 的固有最小宽度（窄屏会被裁）
-     3. 把 cap-widget 的 --cap-* 变量映射到站点配色
+   /verify/ —— 两步验证页
+   视觉语言与首页一致：纸白底 + 墨色字 + 赤陶强调、衬线标题、等宽小标、
+   编号区块 + 1px 细线，不用阴影和大圆角。
    =================================================================== */
 
-.verify-page {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  padding-top: 6px;
+.verify-shell{
+  --bg:#F5F1E9; --bg-2:#FCFAF4; --card:#FCFAF4; --surface-container:#F0EADC;
+  --glass:rgba(245,241,233,.84); --glass-edge:rgba(255,255,255,.7);
+  --line:#E0D8C8; --dim:rgba(34,30,24,.16);
+  --press:rgba(34,30,24,.06);
+  --text:#221E18; --text-2:#6E6759; --text-3:#948B7C;
+  --primary:#C14A11; --primary-strong:#A63E0C; --on-primary:#FCFAF4;
+  --shadow-card:none;
+  --shadow-float:0 18px 44px -24px rgba(48,38,26,.4);
+  --r-card:4px; --r-btn:999px; --r-dialog:8px;
+  --font-sans:Georgia,'Times New Roman','Songti SC','Songti TC',serif;
+  --page-max:760px;
+  background:var(--bg); color:var(--text); min-height:100vh;
 }
 
-.verify-widget {
-  display: flex;
-  flex-direction: column;
-  /* stretch：让 driftcha 拿到完整宽度。
-     它内部 canvas 的固有尺寸是 520×240（= 字段 260×120 × scale 2），
-     会被 min-width:auto 链条锁成最小宽度，窄屏下就会被裁掉。 */
-  align-items: stretch;
-  width: 100%;
+[data-theme='dark'] .verify-shell{
+  --bg:#171310; --bg-2:#1F1A15; --card:#1F1A15; --surface-container:#241D16;
+  --glass:rgba(23,19,16,.84); --glass-edge:rgba(255,255,255,.08);
+  --line:#2E2820; --dim:rgba(0,0,0,.5); --press:rgba(255,255,255,.06);
+  --text:#EDE5D6; --text-2:#9C9282; --text-3:#6E6759;
+  --primary:#E8752F; --primary-strong:#F09049; --on-primary:#1C130B;
 }
 
-/* Driftcha：解除 canvas 固有尺寸带来的最小宽度，让它跟着容器缩放。
-   （根元素类名是 .driftcha，见 driftcha.js 里 root.className = 'driftcha'）
-   实测生效：520px → 264px，且渲染器会把画布重排为 260×120（原生字段尺寸，比例不变）。 */
-#driftcha .driftcha {
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
+/* 顶栏：与首页同一套 nav 观感 */
+.verify-shell .appbar{
+  background:transparent; box-shadow:none; backdrop-filter:none;
+  border-bottom:1px solid transparent;
+}
+.verify-shell .appbar.is-scrolled{ border-bottom-color:var(--line) }
+.verify-shell .appbar__name,
+.verify-shell .appbar__title{
+  font-family:Georgia,'Times New Roman',serif; font-weight:500; letter-spacing:-.01em;
+}
+.verify-shell .appbar__sub{ display:none }
+
+/* 页面容器 */
+.verify-page{
+  max-width:var(--page-max); margin:0 auto;
+  padding:clamp(2.2rem,6vh,4rem) clamp(20px,5vw,56px) 6rem;
+  display:flex; flex-direction:column;
 }
 
+.v-overline{
+  color:var(--primary); font-size:.76rem; letter-spacing:.14em;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.v-lede{ margin-top:.9rem; font-size:1.08rem; color:var(--text-2); max-width:56ch }
+
+/* 步骤 */
+.v-step{ margin-top:clamp(2.2rem,5vw,3.2rem) }
+.v-step__head{ display:flex; align-items:baseline; gap:.9rem }
+.v-idx{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.72rem; color:var(--primary); letter-spacing:.08em;
+}
+.v-step__title{ font-size:clamp(1.25rem,2.6vw,1.5rem); font-weight:500; letter-spacing:-.01em }
+.v-rule{ flex:1; height:1px; background:var(--line) }
+.v-state{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3);
+  border:1px solid var(--line); border-radius:999px; padding:.2rem .55rem;
+}
+.v-state[data-state='passed']{ color:var(--primary); border-color:var(--primary) }
+.v-state[data-state='waiting']{ color:var(--text-2) }
+.v-step__sub{ margin-top:.55rem; font-size:.95rem; color:var(--text-2); max-width:56ch }
+.v-step__body{ margin-top:1.3rem }
+
+/* 第 02 步锁定态 */
+.v-locked{ margin-top:1.1rem; font-size:.8rem; color:var(--text-3) }
+.v-step[data-locked='false'] .v-locked{ display:none }
+.v-step[data-locked='true'] .v-step__body{ opacity:.3; filter:grayscale(1); pointer-events:none }
+
+.verify-widget{ display:flex; flex-direction:column; align-items:stretch; width:100% }
+
+/* Driftcha：解除 canvas 固有 520px 最小宽度，窄屏才不会被裁 */
+#driftcha .driftcha{ min-width:0; width:100%; max-width:100% }
 #driftcha .dc-stage,
-#driftcha .dc-canvas {
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
-  height: auto;
+#driftcha .dc-canvas{ min-width:0; width:100%; max-width:100%; height:auto }
+
+/* Cap 保持自己的宽度，别被拉满 */
+#cap cap-widget{ align-self:flex-start }
+
+.verify-callout{ font-size:.9rem; color:var(--text-2) }
+.verify-gate{ display:flex }
+
+/* 小按钮 */
+.v-btn{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.76rem; letter-spacing:.06em; color:var(--text);
+  border:1px solid var(--line-2,#CDC2AB); border-radius:999px;
+  padding:.55rem 1.1rem; background:transparent; cursor:pointer;
+  transition:color .2s, border-color .2s;
+}
+.v-btn:hover{ color:var(--primary); border-color:var(--primary) }
+
+/* 结果卡：两步都过才出现 */
+.v-done[hidden]{ display:none }
+.v-done{
+  margin-top:clamp(2.6rem,6vw,4rem);
+  border:1px solid var(--line); border-radius:4px;
+  padding:clamp(1.6rem,4vw,2.4rem);
+  display:flex; flex-direction:column; align-items:flex-start; gap:.7rem;
+  background:var(--bg-2);
+}
+.v-done__mark{
+  width:38px; height:38px; border-radius:50%;
+  display:grid; place-items:center;
+  background:var(--primary); color:var(--on-primary);
+  font-size:1.1rem; line-height:1;
+}
+.v-done__title{ font-size:clamp(1.5rem,3.4vw,2rem); font-weight:500; letter-spacing:-.015em; margin-top:.3rem }
+.v-done__body{ color:var(--text-2); font-size:1rem }
+.v-done__meta{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.7rem; letter-spacing:.1em; color:var(--text-3); text-transform:uppercase;
+}
+.v-done .v-btn{ margin-top:.6rem }
+
+@media (max-width:680px){
+  .v-step__head{ flex-wrap:wrap; row-gap:.5rem }
+  .v-rule{ display:none }
 }
 
-/* Cap 控件保持自己 260px 的宽度，不要被拉满 */
-#cap cap-widget {
-  align-self: flex-start;
+/* ---------- Driftcha 换皮：走它自己的 --dc-* 变量 ---------- */
+.verify-shell #driftcha .driftcha{
+  --dc-bg: var(--bg-2);
+  --dc-surface: var(--bg-3, #EBE5D8);
+  --dc-surface-hover: var(--line);
+  --dc-border: var(--line);
+  --dc-border-strong: var(--line-2, #CDC2AB);
+  --dc-text: var(--text);
+  --dc-muted: var(--text-2);
+  --dc-accent: var(--primary);
+  --dc-accent-hover: var(--primary-strong);
+  --dc-accent-text: var(--on-primary);
+  --dc-accent-ring: color-mix(in srgb, var(--primary) 26%, transparent);
+  --dc-shadow: none;
+  --dc-radius: 4px;
+  --dc-radius-sm: 3px;
 }
-
-/* 后端不可用时的那一行说明，以及 reduced-motion 下的加载按钮 */
-.verify-callout {
-  font-size: 14px;
-  color: var(--text-2);
+.verify-shell #driftcha .driftcha{
+  font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
 }
-
-.verify-gate {
-  display: flex;
-}
-
-.verify-gate .btn {
-  width: 100%;
-}
+.verify-shell #driftcha .driftcha .dc-title,
+.verify-shell #driftcha .driftcha h2{ font-family: inherit; font-weight: 500 }
