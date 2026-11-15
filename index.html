@@ -137,13 +137,15 @@ svg{ flex:none }
   animation:blink 1.1s step-end infinite;
 }
 .tw-line.is-typing .tw-cursor{ animation:none }
+/* 打出处时光标跟小字一起缩一号 */
+.tw-line.is-attr .tw-cursor{ width:.34em; height:.62em; vertical-align:-.02em }
 /* 名句出处：打完字后淡入，字号略小、颜色更淡 */
 .tw-attr{
   display:inline-block; margin-left:.45em; font-size:.62em; letter-spacing:.02em;
-  color:var(--ink-3, #948B7C); opacity:0; transform:translateY(.12em);
-  transition:opacity .4s ease, transform .4s ease;
+  color:var(--ink-3, #948B7C); opacity:0;
+  transition:opacity .18s ease;
 }
-.tw-attr.is-on{ opacity:1; transform:none }
+.tw-attr.is-on{ opacity:1 }
 @keyframes blink{ 0%,49%{opacity:1} 50%,100%{opacity:0} }
 .lede{ margin-top:1.7rem; max-width:60ch; font-size:1.13rem; color:var(--ink-2) }
 .hero-meta{ margin-top:2.4rem; font-size:.78rem; color:var(--ink-2) }
@@ -958,53 +960,58 @@ function splitPhrase(s){
   const i = String(s).indexOf('|||');
   return i < 0 ? { q: String(s), a: '' } : { q: String(s).slice(0, i), a: String(s).slice(i + 3) };
 }
-function showAttr(a){
-  twAttr.textContent = a || '';
-  twAttr.classList.toggle('is-on', Boolean(a));
+// 把「已打出的字数」映射到正文与出处两段上：出处接在正文后面继续打
+function renderTyped(q, a2, n){
+  twText.textContent = q.slice(0, Math.min(n, q.length));
+  const an = Math.max(0, n - q.length);
+  twAttr.textContent = an > 0 ? a2.slice(0, an) : '';
+  twAttr.classList.toggle('is-on', an > 0);
+  twLine.classList.toggle('is-attr', an > 0);
 }
 function twStep(){
-  const { q, a } = splitPhrase(PHRASES[pi]);
+  const { q, a: at } = splitPhrase(PHRASES[pi]);
+  const total = q.length + at.length;
   if (!del){
     ci++;
-    twText.textContent = q.slice(0, ci);
+    renderTyped(q, at, ci);
     twLine.classList.add('is-typing');
-    if (ci >= q.length){
+    if (ci >= total){
       twLine.classList.remove('is-typing');
-      showAttr(a);
-      // 名句给足阅读时间，比原来的寒暄更耐看
       twTimer = setTimeout(() => { del = true; twStep(); }, 4200);
       return;
     }
-    const c = q[ci-1];
-    const d = /[,.;:!?—，。；：！？、]/.test(c) ? 240 : (c === ' ' ? 55 : 36 + Math.random()*60);
+    const inAttr = ci > q.length;
+    const ch = inAttr ? at[ci - q.length - 1] : q[ci - 1];
+    let d = /[,.;:!?—，。；：！？、]/.test(ch) ? 240 : (ch === ' ' ? 55 : 36 + Math.random()*60);
+    if (ci === q.length + 1) d += 220;        // 正文与出处之间停顿一下
+    if (inAttr) d = Math.max(26, Math.round(d * 0.55));  // 出处打得快一点
     twTimer = setTimeout(twStep, d);
   } else {
-    showAttr('');
-    ci -= 3;
-    twLine.classList.add('is-typing');
+    ci -= 4;
     if (ci <= 0){
       ci = 0; del = false;
       twLine.classList.remove('is-typing');
-      twText.textContent = '';
+      renderTyped(q, at, 0);
       pi = (pi + 1) % PHRASES.length;
       twTimer = setTimeout(twStep, 380);
       return;
     }
-    twText.textContent = q.slice(0, ci);
-    twTimer = setTimeout(twStep, 20);
+    twLine.classList.add('is-typing');
+    renderTyped(q, at, ci);
+    twTimer = setTimeout(twStep, 18);
   }
 }
-if (REDUCED){ const f = splitPhrase(PHRASES[0]); twText.textContent = f.q; showAttr(f.a); }
+if (REDUCED){ const f = splitPhrase(PHRASES[0]); renderTyped(f.q, f.a, f.q.length + f.a.length); }
 else { twTimer = setTimeout(twStep, 650); }
 twLine.addEventListener('click', () => {
   if (REDUCED) return;
-  const { q, a } = splitPhrase(PHRASES[pi]);
-  if (!del && ci < q.length){
+  const { q, a: at } = splitPhrase(PHRASES[pi]);
+  const total = q.length + at.length;
+  if (!del && ci < total){
     clearTimeout(twTimer);
-    ci = q.length;
-    twText.textContent = q;
+    ci = total;
+    renderTyped(q, at, ci);
     twLine.classList.remove('is-typing');
-    showAttr(a);
     twTimer = setTimeout(() => { del = true; twStep(); }, 2600);
   }
 });
@@ -1108,9 +1115,9 @@ function applyLang(lang){
   PHRASES.length = 0;
   PHRASES.push(...t['phrases']);
   pi = 0; ci = 0; del = false;
-  showAttr('');
+  twAttr.textContent = ''; twAttr.classList.remove('is-on');
   clearTimeout(twTimer);
-  if (REDUCED){ const f = splitPhrase(PHRASES[0]); twText.textContent = f.q; showAttr(f.a); }
+  if (REDUCED){ const f = splitPhrase(PHRASES[0]); renderTyped(f.q, f.a, f.q.length + f.a.length); }
   else { twText.textContent = ''; twTimer = setTimeout(twStep, 240); }
 
   // 项目描述与状态行也要跟着换
