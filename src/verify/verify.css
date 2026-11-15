@@ -10,7 +10,7 @@
   --line:#E0D8C8; --dim:rgba(34,30,24,.16);
   --press:rgba(34,30,24,.06);
   --text:#221E18; --text-2:#6E6759; --text-3:#948B7C;
-  --primary:#C14A11; --primary-strong:#A63E0C; --on-primary:#FCFAF4;
+  --primary:#C14A11; --primary-strong:#A63E0C; --on-primary:#FCFAF4; --danger:#B3261E;
   --shadow-card:none;
   --shadow-float:0 18px 44px -24px rgba(48,38,26,.4);
   --r-card:4px; --r-btn:999px; --r-dialog:8px;
@@ -24,7 +24,7 @@
   --glass:rgba(23,19,16,.84); --glass-edge:rgba(255,255,255,.08);
   --line:#2E2820; --dim:rgba(0,0,0,.5); --press:rgba(255,255,255,.06);
   --text:#EDE5D6; --text-2:#9C9282; --text-3:#6E6759;
-  --primary:#E8752F; --primary-strong:#F09049; --on-primary:#1C130B;
+  --primary:#E8752F; --primary-strong:#F09049; --on-primary:#1C130B; --danger:#FF9B8F;
 }
 
 /* 顶栏：与首页同一套 nav 观感 */
@@ -154,5 +154,28 @@
   --bg:#060B07; --bg-2:#0B130D; --card:#0B130D; --surface-container:#12210F;
   --glass:rgba(6,11,7,.84); --line:#173321; --press:rgba(66,245,129,.1);
   --text:#A5EFAC; --text-2:#5EA96B; --text-3:#3E7048;
-  --primary:#42F581; --primary-strong:#93F7A6; --on-primary:#04160B;
+  --primary:#42F581; --primary-strong:#93F7A6; --on-primary:#04160B; --danger:#FF8F7A;
 }
+
+/* 执行日志：终端风，配色跟着主题走 */
+.v-logwrap{ margin-top: clamp(1.6rem, 4vw, 2.2rem) }
+.v-log{
+  margin-top: .8rem;
+  max-height: 260px;
+  overflow: auto;
+  padding: .8rem .9rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .72rem;
+  line-height: 1.8;
+  scrollbar-width: thin;
+}
+.v-log__line{ display: flex; gap: .6rem; margin: 0; white-space: pre-wrap }
+.v-log__t{ flex: 0 0 auto; color: var(--text-3) }
+.v-log__tag{ flex: 0 0 auto; color: var(--text-3); letter-spacing: .04em }
+.v-log__line[data-kind='ok'] .v-log__tag{ color: var(--primary) }
+.v-log__line[data-kind='warn'] .v-log__tag{ color: var(--danger, #b3261e) }
+.v-log__msg{ flex: 1 }
+.v-log__ex{ flex: 0 0 auto; color: var(--text-3) }

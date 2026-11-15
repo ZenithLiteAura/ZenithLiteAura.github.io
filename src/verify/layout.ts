@@ -14,6 +14,8 @@ export interface VerifyPageRefs {
   step2State: HTMLElement
   /** 结果卡 */
   done: HTMLElement
+  /** 执行日志容器 */
+  logHost: HTMLElement
 }
 
 export interface VerifyPageOptions {
@@ -82,6 +84,8 @@ export function renderVerifyPage(root: HTMLElement, options: VerifyPageOptions):
     restart,
   ])
 
+  const logHost = h('div', { class: 'v-log', 'aria-live': 'polite', 'aria-label': d['verify.logTitle'] })
+
   const page = h('div', { class: 'page verify-page' }, [
     h('p', { class: 'v-overline mono', text: d['verify.overline'] }),
     h('p', { class: 'v-lede', text: d['verify.lede'] }),
@@ -90,12 +94,17 @@ export function renderVerifyPage(root: HTMLElement, options: VerifyPageOptions):
       h('p', { class: 'v-step__sub', text: d['verify.step1Sub'] }),
       h('div', { class: 'v-step__body' }, [capHost]),
     ]),
+    // 日志紧跟 Cap：先看到「刚发生了什么」，再往下走噪点那一步
+    h('section', { class: 'v-logwrap' }, [
+      stepHead('LOG', d['verify.logTitle'], h('span', { class: 'v-state mono', 'data-state': 'passed', text: 'live' })),
+      logHost,
+    ]),
     step2,
     done,
   ])
 
   root.replaceChildren(renderTopBar(d['verify.title'], '', '/'), page)
-  return { driftchaHost, capHost, step2, step2State, done }
+  return { driftchaHost, capHost, step2, step2State, done, logHost }
 }
 
 /** reduced-motion 时不自动播放，只留一个按钮把决定权交给用户。 */

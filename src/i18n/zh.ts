@@ -86,6 +86,7 @@ export const zh = {
   'verify.stepLockedChip': '待解锁',
   'verify.stepWaiting': '待完成',
   'verify.stepPassed': '已通过',
+  'verify.logTitle': '执行日志',
   'verify.doneTitle': '确认是真人',
   'verify.doneBody': '两步验证都已通过。',
   'verify.doneMeta': '2 / 2 passed · human verified',

@@ -90,6 +90,7 @@ export const en: Dict = {
   'verify.stepLockedChip': 'locked',
   'verify.stepWaiting': 'waiting',
   'verify.stepPassed': 'passed',
+  'verify.logTitle': 'Telemetry',
   'verify.doneTitle': 'Confirmed: human',
   'verify.doneBody': 'Both checks passed.',
   'verify.doneMeta': '2 / 2 passed · human verified',
