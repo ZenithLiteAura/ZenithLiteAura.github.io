@@ -127,7 +127,7 @@ svg{ flex:none }
 .tw-cmd{ margin-top:2.7rem; font-size:.85rem; color:var(--ink-2) }
 /* 主标题已交给点阵 canvas，这里降为一行副标题（名句打字机） */
 .tw-line{
-  margin-top:1.1rem; min-height:1.8em; cursor:pointer;
+  margin-top:1.1rem; min-height:3.2em; cursor:pointer;
   font-size:clamp(1.05rem,2.4vw,1.45rem); font-weight:400;
   line-height:1.5; letter-spacing:.01em; color:var(--ink-2);
 }
@@ -137,6 +137,13 @@ svg{ flex:none }
   animation:blink 1.1s step-end infinite;
 }
 .tw-line.is-typing .tw-cursor{ animation:none }
+/* 名句出处：打完字后淡入，字号略小、颜色更淡 */
+.tw-attr{
+  display:inline-block; margin-left:.45em; font-size:.62em; letter-spacing:.02em;
+  color:var(--ink-3, #948B7C); opacity:0; transform:translateY(.12em);
+  transition:opacity .4s ease, transform .4s ease;
+}
+.tw-attr.is-on{ opacity:1; transform:none }
 @keyframes blink{ 0%,49%{opacity:1} 50%,100%{opacity:0} }
 .lede{ margin-top:1.7rem; max-width:60ch; font-size:1.13rem; color:var(--ink-2) }
 .hero-meta{ margin-top:2.4rem; font-size:.78rem; color:var(--ink-2) }
@@ -418,7 +425,7 @@ svg{ flex:none }
     </div>
     <p class="tw-line" id="twLine" title="click to complete instantly">
       <span class="sr-only" data-i18n="hero.sr">你好，我是 ZenithLiteAura。</span>
-      <span aria-hidden="true"><span id="twText"></span><span class="tw-cursor"></span></span>
+      <span aria-hidden="true"><span id="twText"></span><span class="tw-attr" id="twAttr"></span><span class="tw-cursor"></span></span>
     </p>
     <p class="hero-meta mono" data-i18n="hero.meta"><b>Python</b> · 自建服务 · <b>0</b> trackers</p>
   </section>
@@ -499,7 +506,7 @@ const L10N = {
     'oss.live': 'live · api.github.com · {n} calls · {ms} ms',
     'oss.partial': 'partial · {ok}/{n} answered · rest cached',
     'oss.offline': 'offline · network unavailable · last known counts',
-    'phrases': ['你好，我是 ZenithLiteAura', '路漫漫其修远兮，吾将上下而求索。', '纸上得来终觉浅，绝知此事要躬行。', '博观而约取，厚积而薄发。', '大音希声，大象无形。', '不积跬步，无以至千里。', '工欲善其事，必先利其器。', '长风破浪会有时，直挂云帆济沧海。', 'Talk is cheap. Show me the code.'],
+    'phrases': ['你好，我是 ZenithLiteAura。', '路漫漫其修远兮，吾将上下而求索。|||——屈原《离骚》', '纸上得来终觉浅，绝知此事要躬行。|||——陆游《冬夜读书示子聿》', '博观而约取，厚积而薄发。|||——苏轼《稼说送张琥》', '大音希声，大象无形。|||——老子《道德经》', '不积跬步，无以至千里。|||——荀子《劝学》', '工欲善其事，必先利其器。|||——孔子《论语》', '长风破浪会有时，直挂云帆济沧海。|||——李白《行路难》', '非淡泊无以明志，非宁静无以致远。|||——诸葛亮《诫子书》', '天行健，君子以自强不息。|||——《周易》', '地势坤，君子以厚德载物。|||——《周易》', '穷则独善其身，达则兼济天下。|||——孟子《尽心上》', '三人行，必有我师焉。|||——孔子《论语》', '学而不思则罔，思而不学则殆。|||——孔子《论语》', '知之者不如好之者，好之者不如乐之者。|||——孔子《论语》', '千里之行，始于足下。|||——老子《道德经》', '见贤思齐焉，见不贤而内自省也。|||——孔子《论语》', '君子藏器于身，待时而动。|||——《周易》', '生当作人杰，死亦为鬼雄。|||——李清照《夏日绝句》', '会当凌绝顶，一览众山小。|||——杜甫《望岳》', '沉舟侧畔千帆过，病树前头万木春。|||——刘禹锡', '海内存知己，天涯若比邻。|||——王勃《送杜少府之任蜀州》', '洛阳亲友如相问，一片冰心在玉壶。|||——王昌龄《芙蓉楼送辛渐》', '山重水复疑无路，柳暗花明又一村。|||——陆游《游山西村》', '问渠那得清如许，为有源头活水来。|||——朱熹《观书有感》', '业精于勤，荒于嬉。|||——韩愈《进学解》', '静以修身，俭以养德。|||——诸葛亮《诫子书》', '位卑未敢忘忧国。|||——陆游《病起书怀》', '三军可夺帅也，匹夫不可夺志也。|||——孔子《论语》', '岁寒，然后知松柏之后凋也。|||——孔子《论语》', '吾生也有涯，而知也无涯。|||——庄子《养生主》', '相濡以沫，不如相忘于江湖。|||——庄子《大宗师》', '天地有大美而不言。|||——庄子《知北游》', '上善若水，水善利万物而不争。|||——老子《道德经》', '知人者智，自知者明。|||——老子《道德经》', '祸兮福之所倚，福兮祸之所伏。|||——老子《道德经》', '夫唯不争，故天下莫能与之争。|||——老子《道德经》', '知止而后有定，定而后能静。|||——《大学》', '苟日新，日日新，又日新。|||——《大学》', '君子坦荡荡，小人长戚戚。|||——孔子《论语》', '己所不欲，勿施于人。|||——孔子《论语》', '敏而好学，不耻下问。|||——孔子《论语》', '温故而知新，可以为师矣。|||——孔子《论语》', '逝者如斯夫，不舍昼夜。|||——孔子《论语》', '不义而富且贵，于我如浮云。|||——孔子《论语》', '千磨万击还坚劲，任尔东西南北风。|||——郑燮《竹石》', '粉骨碎身浑不怕，要留清白在人间。|||——于谦《石灰吟》', '不要人夸颜色好，只留清气满乾坤。|||——王冕《墨梅》', '文章合为时而著，歌诗合为事而作。|||——白居易《与元九书》', '读书破万卷，下笔如有神。|||——杜甫《奉赠韦左丞丈》', '语不惊人死不休。|||——杜甫', '两句三年得，一吟双泪流。|||——贾岛《题诗后》', '吟安一个字，捻断数茎须。|||——卢延让《苦吟》', '文章本天成，妙手偶得之。|||——陆游《文章》', '汝果欲学诗，工夫在诗外。|||——陆游《示子遹》', '人生如逆旅，我亦是行人。|||——苏轼《临江仙》', '此心安处是吾乡。|||——苏轼《定风波》', '竹杖芒鞋轻胜马，一蓑烟雨任平生。|||——苏轼《定风波》', '但愿人长久，千里共婵娟。|||——苏轼《水调歌头》', '江畔何人初见月？江月何年初照人？|||——张若虚《春江花月夜》', '人生代代无穷已，江月年年只相似。|||——张若虚《春江花月夜》', '落霞与孤鹜齐飞，秋水共长天一色。|||——王勃《滕王阁序》', '老当益壮，宁移白首之心。|||——王勃《滕王阁序》', '莫愁前路无知己，天下谁人不识君。|||——高适《别董大》', '先天下之忧而忧，后天下之乐而乐。|||——范仲淹《岳阳楼记》', '不以物喜，不以己悲。|||——范仲淹《岳阳楼记》', '醉翁之意不在酒，在乎山水之间也。|||——欧阳修《醉翁亭记》', '山水之乐，得之心而寓之酒也。|||——欧阳修《醉翁亭记》', '无可奈何花落去，似曾相识燕归来。|||——晏殊《浣溪沙》', '衣带渐宽终不悔，为伊消得人憔悴。|||——柳永《蝶恋花》', '众里寻他千百度，蓦然回首，那人却在灯火阑珊处。|||——辛弃疾《青玉案》', '醉里挑灯看剑，梦回吹角连营。|||——辛弃疾《破阵子》', '了却君王天下事，赢得生前身后名。|||——辛弃疾《破阵子》', '青山遮不住，毕竟东流去。|||——辛弃疾《菩萨蛮》', '天生我材必有用，千金散尽还复来。|||——李白《将进酒》', '举杯邀明月，对影成三人。|||——李白《月下独酌》', '孤帆远影碧空尽，唯见长江天际流。|||——李白《黄鹤楼送孟浩然之广陵》', '桃花潭水深千尺，不及汪伦送我情。|||——李白《赠汪伦》', '安能摧眉折腰事权贵，使我不得开心颜。|||——李白《梦游天姥吟留别》', '寄蜉蝣于天地，渺沧海之一粟。|||——苏轼《赤壁赋》', '哀吾生之须臾，羡长江之无穷。|||——苏轼《赤壁赋》', '惟江上之清风，与山间之明月。|||——苏轼《赤壁赋》', '苟非吾之所有，虽一毫而莫取。|||——苏轼《赤壁赋》', '庭下如积水空明，水中藻荇交横。|||——苏轼《记承天寺夜游》', '富贵不能淫，贫贱不能移，威武不能屈。|||——孟子《滕文公下》', '老吾老以及人之老，幼吾幼以及人之幼。|||——孟子《梁惠王上》', '君子求诸己，小人求诸人。|||——孔子《论语》', '万物皆备于我矣。|||——孟子《尽心上》', '少年易老学难成，一寸光阴不可轻。|||——朱熹《偶成》', '宝剑锋从磨砺出，梅花香自苦寒来。|||——《警世贤文》', '我唯一知道的，就是我一无所知。|||——苏格拉底', '未经省察的人生不值得过。|||——苏格拉底', '吾爱吾师，吾更爱真理。|||——亚里士多德', '我思故我在。|||——笛卡尔', '知识就是力量。|||——培根', '人是一根会思想的芦苇。|||——帕斯卡', '一个人知道自己为什么而活，就可以忍受任何一种生活。|||——尼采', '那些杀不死我的，使我更强大。|||——尼采', '生活中只有一种英雄主义：看清生活真相后依然热爱它。|||——罗曼·罗兰', '想象力比知识更重要。|||——爱因斯坦', '过早优化是万恶之源。|||——高德纳'],
   },
   en: {
     'title': 'ZenithLiteAura',
@@ -518,7 +525,7 @@ const L10N = {
     'oss.live': 'live · api.github.com · {n} calls · {ms} ms',
     'oss.partial': 'partial · {ok}/{n} answered · rest cached',
     'oss.offline': 'offline · network unavailable · last known counts',
-    'phrases': ['Hello, I am ZenithLiteAura', 'Talk is cheap. Show me the code.', 'First, solve the problem. Then write the code.', 'Premature optimization is the root of all evil.', 'Simplicity is prerequisite for reliability.', 'Programs must be written for people to read.', 'Make it work, make it right, make it fast.'],
+    'phrases': ['Hello, I am ZenithLiteAura.', 'Stay hungry, stay foolish.|||— Steve Jobs', 'The only way to do great work is to love what you do.|||— Steve Jobs', 'Talk is cheap. Show me the code.|||— Linus Torvalds', 'Given enough eyeballs, all bugs are shallow.|||— Eric S. Raymond', 'Premature optimization is the root of all evil.|||— Donald Knuth', 'Programs must be written for people to read.|||— Harold Abelson', 'Simplicity is prerequisite for reliability.|||— Edsger Dijkstra', 'Testing shows the presence, not the absence, of bugs.|||— Edsger Dijkstra', 'The best way to predict the future is to invent it.|||— Alan Kay', 'Simple things should be simple, complex things possible.|||— Alan Kay', 'Any sufficiently advanced technology is indistinguishable from magic.|||— Arthur C. Clarke', 'Make it work, make it right, make it fast.|||— Kent Beck', 'First, solve the problem. Then write the code.|||— John Johnson', 'Perfection is achieved when there is nothing left to take away.|||— Antoine de Saint-Exupéry', 'The best code is no code at all.|||— Jeff Atwood', 'Deleted code is debugged code.|||— Jeff Sickel', 'If it hurts, do it more often.|||— Martin Fowler', 'Any fool can write code a computer understands.|||— Martin Fowler', 'There are two hard things in computer science: cache invalidation and naming things.|||— Phil Karlton', 'Done is better than perfect.|||— Sheryl Sandberg', 'The most dangerous phrase is: we have always done it this way.|||— Grace Hopper', 'It is easier to ask forgiveness than permission.|||— Grace Hopper', 'The best way to get a good idea is to have a lot of ideas.|||— Linus Pauling', 'If you cannot explain it simply, you do not understand it well enough.|||— Albert Einstein', 'Imagination is more important than knowledge.|||— Albert Einstein', 'Try not to become a person of success, but a person of value.|||— Albert Einstein', 'The important thing is not to stop questioning.|||— Albert Einstein', 'Education is what remains after school is forgotten.|||— Albert Einstein', 'I have no special talents, I am only passionately curious.|||— Albert Einstein', 'What I cannot create, I do not understand.|||— Richard Feynman', 'The first principle is that you must not fool yourself.|||— Richard Feynman', 'The thing that does not fit is the thing that is most interesting.|||— Richard Feynman', 'Science is the belief in the ignorance of experts.|||— Richard Feynman', 'Good design is as little design as possible.|||— Dieter Rams', 'Less, but better.|||— Dieter Rams', 'God is in the details.|||— Ludwig Mies van der Rohe', 'Less is more.|||— Ludwig Mies van der Rohe', 'Form follows function.|||— Louis Sullivan', 'We shape our buildings; thereafter they shape us.|||— Winston Churchill', 'The journey of a thousand miles begins with one step.|||— Lao Tzu', 'Knowing others is intelligence; knowing yourself is wisdom.|||— Lao Tzu', 'Not all those who wander are lost.|||— J. R. R. Tolkien', 'All we have to decide is what to do with the time given us.|||— J. R. R. Tolkien', 'It is not the mountain we conquer but ourselves.|||— Edmund Hillary', 'Because it is there.|||— George Mallory', 'We are what we repeatedly do. Excellence is a habit.|||— Will Durant', 'Knowing is not enough; we must apply.|||— Johann Wolfgang von Goethe', 'Whatever you can do, or dream you can, begin it.|||— Johann Wolfgang von Goethe', 'The limits of my language are the limits of my world.|||— Ludwig Wittgenstein', 'Whereof one cannot speak, thereof one must be silent.|||— Ludwig Wittgenstein', 'I think, therefore I am.|||— René Descartes', 'Doubt is the origin of wisdom.|||— René Descartes', 'Knowledge is power.|||— Francis Bacon', 'Reading makes a full man; conference a ready man.|||— Francis Bacon', 'Man is a reed, the weakest in nature, but a thinking reed.|||— Blaise Pascal', 'The heart has its reasons which reason knows nothing of.|||— Blaise Pascal', 'All of humanity’s problems stem from not sitting quietly.|||— Blaise Pascal', 'Nothing is more powerful than an idea whose time has come.|||— Victor Hugo', 'Man is born free, and everywhere he is in chains.|||— Jean-Jacques Rousseau', 'Two things fill me with awe: the starry sky above, the moral law within.|||— Immanuel Kant', 'Man is an end in himself, not a means.|||— Immanuel Kant', 'The owl of Minerva takes flight at dusk.|||— G. W. F. Hegel', 'What is rational is real; what is real is rational.|||— G. W. F. Hegel', 'He who has a why to live can bear almost any how.|||— Friedrich Nietzsche', 'That which does not kill us makes us stronger.|||— Friedrich Nietzsche', 'If you gaze long into an abyss, the abyss gazes into you.|||— Friedrich Nietzsche', 'One must still have chaos in oneself to give birth to a dancing star.|||— Friedrich Nietzsche', 'In every real man a child is hidden that wants to play.|||— Friedrich Nietzsche', 'There is only one heroism: to see the world as it is, and to love it.|||— Romain Rolland', 'Life is not about finding yourself. It is about creating yourself.|||— George Bernard Shaw', 'Progress is impossible without change.|||— George Bernard Shaw', 'We don’t stop playing because we grow old; we grow old because we stop playing.|||— George Bernard Shaw', 'The truth is rarely pure and never simple.|||— Oscar Wilde', 'Be yourself; everyone else is already taken.|||— Oscar Wilde', 'We are all in the gutter, but some of us are looking at the stars.|||— Oscar Wilde', 'Experience is simply the name we give our mistakes.|||— Oscar Wilde', 'To live is the rarest thing in the world. Most people exist.|||— Oscar Wilde', 'A room without books is like a body without a soul.|||— Cicero', 'Everyone thinks of changing the world, but no one thinks of changing himself.|||— Leo Tolstoy', 'The two most powerful warriors are patience and time.|||— Leo Tolstoy', 'If you want to go far, go together.|||— African proverb', 'The best way out is always through.|||— Robert Frost', 'Two roads diverged in a wood, and I took the one less travelled by.|||— Robert Frost', 'Good fences make good neighbours.|||— Robert Frost', 'Do not go gentle into that good night.|||— Dylan Thomas', 'No man is an island, entire of itself.|||— John Donne', 'The only thing we have to fear is fear itself.|||— Franklin D. Roosevelt', 'In the middle of difficulty lies opportunity.|||— Albert Einstein', 'Darkness cannot drive out darkness; only light can do that.|||— Martin Luther King Jr.', 'The arc of the moral universe is long, but it bends toward justice.|||— Martin Luther King Jr.', 'What we think, we become.|||— Buddha', 'The quieter you become, the more you can hear.|||— Ram Dass', 'Simplicity is the ultimate sophistication.|||— Leonardo da Vinci', 'Make it simple, but significant.|||— Don Draper', 'The details are not the details. They make the design.|||— Charles Eames', 'The best interface is no interface.|||— Golden Krishna', 'You cannot understand a system until you try to change it.|||— Kurt Lewin', 'Measure twice, cut once.|||— Proverb', 'Slow is smooth, smooth is fast.|||— Proverb', 'The best way to learn is to teach.|||— Frank Oppenheimer'],
   }
 };
 const T = () => L10N[LANG];
@@ -940,28 +947,39 @@ ttBtns.forEach(b => b.addEventListener('click', () => setTheme(b.dataset.set, tr
 
 /* ---------- 打字机问候 ---------- */
 const PHRASES = [
-  `你好，我是 ZenithLiteAura。`,
-  `主要写 Python，闲下来都在折腾。`,
-  `能自建的就自建：邮箱、相册都在自己服务器上。`,
-  `跑通了就顺手丢到 GitHub。`,
+  '你好，我是 ZenithLiteAura。',
+  '路漫漫其修远兮，吾将上下而求索。|||——屈原《离骚》',
 ];
-const twText = $('#twText'), twLine = $('#twLine');
+const twText = $('#twText'), twLine = $('#twLine'), twAttr = $('#twAttr');
 let pi = 0, ci = 0, del = false, twTimer = null;
+
+// 一条文案的格式：正文|||——作者《篇名》（作者可省略）
+function splitPhrase(s){
+  const i = String(s).indexOf('|||');
+  return i < 0 ? { q: String(s), a: '' } : { q: String(s).slice(0, i), a: String(s).slice(i + 3) };
+}
+function showAttr(a){
+  twAttr.textContent = a || '';
+  twAttr.classList.toggle('is-on', Boolean(a));
+}
 function twStep(){
-  const full = PHRASES[pi];
+  const { q, a } = splitPhrase(PHRASES[pi]);
   if (!del){
     ci++;
-    twText.textContent = full.slice(0, ci);
+    twText.textContent = q.slice(0, ci);
     twLine.classList.add('is-typing');
-    if (ci >= full.length){
+    if (ci >= q.length){
       twLine.classList.remove('is-typing');
-      twTimer = setTimeout(() => { del = true; twStep(); }, 2600);
+      showAttr(a);
+      // 名句给足阅读时间，比原来的寒暄更耐看
+      twTimer = setTimeout(() => { del = true; twStep(); }, 4200);
       return;
     }
-    const c = full[ci-1];
-    const d = /[,.;:!?—]/.test(c) ? 260 : (c === ' ' ? 60 : 40 + Math.random()*70);
+    const c = q[ci-1];
+    const d = /[,.;:!?—，。；：！？、]/.test(c) ? 240 : (c === ' ' ? 55 : 36 + Math.random()*60);
     twTimer = setTimeout(twStep, d);
   } else {
+    showAttr('');
     ci -= 3;
     twLine.classList.add('is-typing');
     if (ci <= 0){
@@ -969,24 +987,25 @@ function twStep(){
       twLine.classList.remove('is-typing');
       twText.textContent = '';
       pi = (pi + 1) % PHRASES.length;
-      twTimer = setTimeout(twStep, 420);
+      twTimer = setTimeout(twStep, 380);
       return;
     }
-    twText.textContent = full.slice(0, ci);
-    twTimer = setTimeout(twStep, 24);
+    twText.textContent = q.slice(0, ci);
+    twTimer = setTimeout(twStep, 20);
   }
 }
-if (REDUCED){ twText.textContent = PHRASES[0]; }
+if (REDUCED){ const f = splitPhrase(PHRASES[0]); twText.textContent = f.q; showAttr(f.a); }
 else { twTimer = setTimeout(twStep, 650); }
 twLine.addEventListener('click', () => {
   if (REDUCED) return;
-  const full = PHRASES[pi];
-  if (!del && ci < full.length){
+  const { q, a } = splitPhrase(PHRASES[pi]);
+  if (!del && ci < q.length){
     clearTimeout(twTimer);
-    ci = full.length;
-    twText.textContent = full;
+    ci = q.length;
+    twText.textContent = q;
     twLine.classList.remove('is-typing');
-    twTimer = setTimeout(() => { del = true; twStep(); }, 2000);
+    showAttr(a);
+    twTimer = setTimeout(() => { del = true; twStep(); }, 2600);
   }
 });
 
@@ -1089,8 +1108,9 @@ function applyLang(lang){
   PHRASES.length = 0;
   PHRASES.push(...t['phrases']);
   pi = 0; ci = 0; del = false;
+  showAttr('');
   clearTimeout(twTimer);
-  if (REDUCED){ twText.textContent = PHRASES[0]; }
+  if (REDUCED){ const f = splitPhrase(PHRASES[0]); twText.textContent = f.q; showAttr(f.a); }
   else { twText.textContent = ''; twTimer = setTimeout(twStep, 240); }
 
   // 项目描述与状态行也要跟着换
