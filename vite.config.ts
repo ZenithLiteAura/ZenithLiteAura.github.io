@@ -25,6 +25,7 @@ export default defineConfig({
         main: entry('./index.html'),
         verify: entry('./verify/index.html'),
         admin: entry('./admin/index.html'),
+    links: entry('./links/index.html'),
       },
     },
   },

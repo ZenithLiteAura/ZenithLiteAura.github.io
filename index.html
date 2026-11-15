@@ -388,7 +388,7 @@ svg{ flex:none }
   <div class="wrap nav-inner">
     <a href="#top" class="logo mono" aria-label="back to top"><span id="logoTxt">zenithliteaura:~</span><span class="logo-p">$</span></a>
     <nav class="nav-links mono" aria-label="site nav">
-      <a href="#snippets" data-i18n="nav.snippets">片段</a><a href="#oss" data-i18n="nav.oss">项目</a><a href="#about" data-i18n="nav.about">关于</a>
+      <a href="#snippets" data-i18n="nav.snippets">片段</a><a href="#oss" data-i18n="nav.oss">项目</a><a href="#about" data-i18n="nav.about">关于</a><a href="/links/" data-i18n="nav.links">链接</a>
     </nav>
     <div class="nav-right">
       <div class="lang-sw" role="group" aria-label="语言 / language">
@@ -429,7 +429,6 @@ svg{ flex:none }
       <span class="sr-only" data-i18n="hero.sr">你好，我是 ZenithLiteAura。</span>
       <span aria-hidden="true"><span id="twText"></span><span class="tw-attr" id="twAttr"></span><span class="tw-cursor"></span></span>
     </p>
-    <p class="hero-meta mono" data-i18n="hero.meta"><b>Python</b> · 自建服务 · <b>0</b> trackers</p>
   </section>
 
   <div class="ticker" aria-hidden="true"><div class="ticker-inner mono" id="tickerInner"></div></div>
@@ -454,12 +453,6 @@ svg{ flex:none }
     <p class="about-txt reveal">
       <button class="inline-code mail-copy" id="mailCopy" type="button" data-i18n-aria="mail.copy" aria-label="复制邮箱地址">admin@zenithliteaura.site</button>
     </p>
-    <div class="colo mono reveal">
-      <span data-i18n="colo.a">Python · 自建服务</span>
-      <span data-i18n="colo.b">Vite · TypeScript</span>
-      <span data-i18n="colo.c">no trackers · no cookies</span>
-      <span class="sys-clock">sys time <b id="clock">--:--:--</b></span>
-    </div>
     <p class="eof mono reveal" aria-hidden="true">[ EOF ]</p>
     <p class="copyright mono">© 2026 ZenithLiteAura</p>
   </footer>
@@ -1079,9 +1072,7 @@ let scrRun = false;
 });
 
 /* ---------- 页脚系统时钟 ---------- */
-const clockEl = $('#clock');
-const tickClock = () => clockEl.textContent = new Date().toLocaleTimeString('en-GB', { hour12:false });
-tickClock(); setInterval(tickClock, 1000);
+
 
 /* ---------- 启动 ---------- */
 renderPosts();

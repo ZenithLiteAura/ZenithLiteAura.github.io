@@ -3,6 +3,7 @@ import { en } from '../i18n/en.ts'
 import { jsonResponse } from '../verify/cap-api.ts'
 import type { KvStore, ServerEnv } from '../server-shared.ts'
 import { contentKey, CONTENT_SECTIONS, isContentSection } from './content-shared.ts'
+import { isLayout } from '../data/links.ts'
 import type { ContentBundle, ContentSection, StoredSection } from './content-shared.ts'
 import { fetchPublicRepos, shapeRepos } from './github-snapshot.ts'
 
@@ -153,6 +154,34 @@ function validateI18n(input: unknown): Valid<Record<string, unknown>> {
   return { ok: true, data }
 }
 
+function validateLinks(input: unknown): Valid<Record<string, unknown>> {
+  if (!isPlainObject(input)) return { ok: false, error: 'links 必须是对象' }
+  const data: Record<string, unknown> = {}
+
+  if (input.layout !== undefined) {
+    if (!isLayout(input.layout)) return { ok: false, error: 'links.layout 不合法' }
+    data.layout = input.layout
+  }
+
+  if (input.items !== undefined) {
+    if (!Array.isArray(input.items)) return { ok: false, error: 'links.items 必须是数组' }
+    const items: Record<string, unknown>[] = []
+    for (const raw of input.items.slice(0, 40)) {
+      if (!isPlainObject(raw)) continue
+      const label = optionalText(raw.label, MAX_NAME)
+      const href = optionalText(raw.href, 500)
+      if (!label || !href) continue
+      if (!/^(https?:\/\/|mailto:|\/|#)/.test(href)) continue
+      items.push({ label, href, desc: optionalText(raw.desc, MAX_TEXT) ?? '' })
+    }
+    if (items.length === 0) return { ok: false, error: 'links.items 里没有有效条目' }
+    data.items = items
+  }
+
+  if (Object.keys(data).length === 0) return { ok: false, error: 'links 没有可保存的字段' }
+  return { ok: true, data }
+}
+
 function validateSection(section: ContentSection, input: unknown): Valid<unknown> {
   switch (section) {
     case 'profile':
@@ -163,6 +192,8 @@ function validateSection(section: ContentSection, input: unknown): Valid<unknown
       return validateRepos(input)
     case 'i18n':
       return validateI18n(input)
+    case 'links':
+      return validateLinks(input)
   }
 }
 

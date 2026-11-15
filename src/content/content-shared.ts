@@ -6,9 +6,15 @@
  * 就静默使用默认值。所以两个域名都不会因为后端缺失而变成空白。
  */
 
-export type ContentSection = 'profile' | 'projects' | 'repos' | 'i18n'
+export type ContentSection = 'profile' | 'projects' | 'repos' | 'i18n' | 'links'
 
-export const CONTENT_SECTIONS: readonly ContentSection[] = ['profile', 'projects', 'repos', 'i18n']
+export const CONTENT_SECTIONS: readonly ContentSection[] = [
+  'profile',
+  'projects',
+  'repos',
+  'i18n',
+  'links',
+]
 
 /** 公开读取路径（无需登录，内容是公开站点内容）。 */
 export const PUBLIC_CONTENT_PATH = '/content.json'
@@ -32,4 +38,5 @@ export interface ContentBundle {
   projects?: unknown
   repos?: unknown
   i18n?: unknown
+  links?: unknown
 }

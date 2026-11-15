@@ -319,3 +319,16 @@
     align-items: center;
   }
 }
+
+/* 链接页编辑器：每行 = 显示文字 / 地址 / 说明 / 删除 */
+.admin-link-rows{ display:flex; flex-direction:column; gap:10px; margin-top:14px }
+.admin-link-row{
+  display:grid; grid-template-columns:1.1fr 1.8fr 1.3fr auto;
+  gap:8px; align-items:center;
+}
+.admin-link-row .btn{ padding:0 12px; height:44px; min-width:44px }
+.admin-select{ appearance:auto }
+@media (max-width:640px){
+  .admin-link-row{ grid-template-columns:1fr 1fr auto }
+  .admin-link-row > :nth-child(3){ grid-column:1 / -1 }
+}

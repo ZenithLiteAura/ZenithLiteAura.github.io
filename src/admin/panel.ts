@@ -7,6 +7,7 @@ import { dict } from '../i18n'
 import { en } from '../i18n/en'
 import { zh } from '../i18n/zh'
 import { state } from '../store'
+import { builtinLinks, isLayout, LAYOUTS } from '../data/links'
 import { loadContentOverrides } from '../content/overrides'
 import type { ContentSection, StoredSection } from '../content/content-shared'
 
@@ -394,6 +395,88 @@ function i18nSection(d: ReturnType<typeof dict>, notify: Notify): HTMLElement {
   return sectionCard(d['admin.sectionI18n'], d['admin.emptyMeansDefault'], body, [save, reset])
 }
 
+/* ------------------------------- 链接页 ------------------------------- */
+
+function linksSection(d: ReturnType<typeof dict>, notify: Notify): HTMLElement {
+  const current = (raw.links?.data ?? {}) as { layout?: unknown; items?: unknown }
+  const source = Array.isArray(current.items) && current.items.length
+    ? (current.items as Array<Record<string, unknown>>)
+    : (builtinLinks.items as unknown as Array<Record<string, unknown>>)
+
+  const layoutSelect = h('select', { class: 'admin-input admin-select' })
+  for (const value of LAYOUTS) {
+    const labelKey = ('layout.' + value) as keyof ReturnType<typeof dict>
+    layoutSelect.append(h('option', { value, text: d[labelKey] }))
+  }
+  layoutSelect.value = isLayout(current.layout) ? current.layout : builtinLinks.layout
+
+  const rows: Array<{ root: HTMLElement; label: HTMLInputElement; href: HTMLInputElement; desc: HTMLInputElement }> = []
+  const rowsHost = h('div', { class: 'admin-link-rows' })
+
+  const addRow = (item: Record<string, unknown>): void => {
+    const label = textInput(d['admin.fieldLinkLabel'], typeof item.label === 'string' ? item.label : '')
+    const href = textInput(d['admin.fieldLinkHref'], typeof item.href === 'string' ? item.href : '')
+    const desc = textInput(d['admin.fieldLinkDesc'], typeof item.desc === 'string' ? item.desc : '')
+    const remove = button('✕', 'ghost')
+    const root = h('div', { class: 'admin-link-row' }, [label, href, desc, remove])
+    const entry = { root, label, href, desc }
+    remove.addEventListener('click', () => {
+      const index = rows.indexOf(entry)
+      if (index >= 0) rows.splice(index, 1)
+      root.remove()
+    })
+    rows.push(entry)
+    rowsHost.append(root)
+  }
+
+  for (const item of source) addRow(item)
+
+  const add = button(d['admin.addLink'], 'ghost')
+  add.addEventListener('click', () => addRow({}))
+
+  const save = button(d['admin.save'])
+  const reset = button(d['admin.reset'], 'ghost')
+
+  save.addEventListener('click', () => {
+    void (async () => {
+      notify(d['admin.saving'])
+      const items = rows
+        .map((row) => ({
+          label: row.label.value.trim(),
+          href: row.href.value.trim(),
+          desc: row.desc.value.trim(),
+        }))
+        .filter((item) => item.label && item.href)
+      if (!items.length) {
+        notify(d['admin.linksEmpty'], true)
+        return
+      }
+      const result = await request(`${ADMIN_API_BASE}content`, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ section: 'links', data: { layout: layoutSelect.value, items } }),
+      })
+      if (result.ok) await afterWrite(d, notify)
+      else notify(describeError(d, result), true)
+    })()
+  })
+
+  reset.addEventListener('click', () => {
+    void (async () => {
+      const result = await request(`${ADMIN_API_BASE}content?section=links`, { method: 'DELETE' })
+      if (result.ok) await afterWrite(d, notify)
+      else notify(describeError(d, result), true)
+    })()
+  })
+
+  const body = h('div', {}, [
+    field(d['admin.fieldLayout'], layoutSelect),
+    rowsHost,
+  ])
+
+  return sectionCard(d['admin.sectionLinks'], d['admin.linksHint'], body, [add, save, reset])
+}
+
 /* ------------------------------- 组装 ------------------------------- */
 
 let rerender: (() => void) | null = null
@@ -429,6 +512,7 @@ export function renderPanel(): HTMLElement {
       profileSection(d, notify),
       projectsSection(d, notify),
       reposSection(d, notify),
+      linksSection(d, notify),
       i18nSection(d, notify),
     )
   }
