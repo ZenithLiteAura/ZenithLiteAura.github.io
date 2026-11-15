@@ -93,7 +93,6 @@ function render(): void {
 
   const page = h('div', { class: 'page links-page' }, [
     h('p', { class: 'lk-overline mono', text: d['links.overline'] }),
-    h('p', { class: 'lk-lede', text: d['links.lede'] }),
     content.items.length
       ? paint(content.layout, content.items)
       : h('p', { class: 'lk-empty mono', text: d['links.empty'] }),
