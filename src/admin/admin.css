@@ -323,12 +323,23 @@
 /* 链接页编辑器：每行 = 显示文字 / 地址 / 说明 / 删除 */
 .admin-link-rows{ display:flex; flex-direction:column; gap:10px; margin-top:14px }
 .admin-link-row{
-  display:grid; grid-template-columns:1.1fr 1.8fr 1.3fr auto;
+  display:grid; grid-template-columns:auto 1.1fr 1.8fr 1.3fr auto auto auto;
   gap:8px; align-items:center;
+  padding:4px; border-radius:12px; border:1px solid transparent;
 }
-.admin-link-row .btn{ padding:0 12px; height:44px; min-width:44px }
+.admin-link-row .btn{ padding:0 10px; height:44px; min-width:40px }
+.admin-link-row.is-dragging{ opacity:.45; border-color:var(--primary) }
+.admin-link-row:hover{ border-color:var(--line) }
+/* 拖动握把 */
+.admin-drag{
+  display:flex; align-items:center; justify-content:center;
+  width:26px; height:44px; cursor:grab; user-select:none;
+  color:var(--text-3); font-size:15px; letter-spacing:-1px;
+}
+.admin-drag:active{ cursor:grabbing }
+.admin-drag:hover{ color:var(--primary) }
 .admin-select{ appearance:auto }
 @media (max-width:640px){
-  .admin-link-row{ grid-template-columns:1fr 1fr auto }
-  .admin-link-row > :nth-child(3){ grid-column:1 / -1 }
+  .admin-link-row{ grid-template-columns:auto 1fr auto auto auto }
+  .admin-link-row > :nth-child(4){ grid-column:2 / -1; order:9 }
 }

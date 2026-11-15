@@ -102,25 +102,94 @@ function linksSection(d: ReturnType<typeof dict>, notify: Notify): HTMLElement {
 
   type Row = { root: HTMLElement; label: HTMLInputElement; href: HTMLInputElement; desc: HTMLInputElement }
   const rows: Row[] = []
+  const byRoot = new Map<HTMLElement, Row>()
   const rowsHost = h('div', { class: 'admin-link-rows' })
+  let dragging: HTMLElement | null = null
+
+  /** 顺序以 DOM 为准：拖动/上下移之后从 DOM 重建 rows，保存时自然就是新顺序。 */
+  const syncOrder = (): void => {
+    const ordered = [...rowsHost.children]
+      .map((el) => byRoot.get(el as HTMLElement))
+      .filter((row): row is Row => Boolean(row))
+    rows.length = 0
+    rows.push(...ordered)
+  }
+
+  const move = (root: HTMLElement, direction: -1 | 1): void => {
+    const sibling = direction === -1 ? root.previousElementSibling : root.nextElementSibling
+    if (!sibling) return
+    if (direction === -1) rowsHost.insertBefore(root, sibling)
+    else rowsHost.insertBefore(sibling, root)
+    syncOrder()
+  }
 
   const addRow = (item: Record<string, unknown>): void => {
     const label = textInput(d['admin.fieldLinkLabel'], typeof item.label === 'string' ? item.label : '')
     const href = textInput(d['admin.fieldLinkHref'], typeof item.href === 'string' ? item.href : '')
     const desc = textInput(d['admin.fieldLinkDesc'], typeof item.desc === 'string' ? item.desc : '')
+
+    // 拖动只认手柄：在输入框上按下应该选文字，而不是把整行拖走
+    const handle = h('span', {
+      class: 'admin-drag',
+      draggable: 'true',
+      role: 'button',
+      tabindex: '0',
+      title: d['admin.dragHint'],
+      'aria-label': d['admin.dragHint'],
+      text: '⠿',
+    })
+    const up = button('↑', 'ghost')
+    const down = button('↓', 'ghost')
     const remove = button('✕', 'ghost')
-    const root = h('div', { class: 'admin-link-row' }, [label, href, desc, remove])
+
+    const root = h('div', { class: 'admin-link-row' }, [handle, label, href, desc, up, down, remove])
     const entry: Row = { root, label, href, desc }
+    byRoot.set(root, entry)
+    rows.push(entry)
+    rowsHost.append(root)
+
+    handle.addEventListener('dragstart', (event) => {
+      dragging = root
+      root.classList.add('is-dragging')
+      event.dataTransfer?.setData('text/plain', '')
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move'
+    })
+    handle.addEventListener('dragend', () => {
+      dragging = null
+      root.classList.remove('is-dragging')
+      syncOrder()
+    })
+
+    up.addEventListener('click', () => move(root, -1))
+    down.addEventListener('click', () => move(root, 1))
     remove.addEventListener('click', () => {
       const index = rows.indexOf(entry)
       if (index >= 0) rows.splice(index, 1)
+      byRoot.delete(root)
       root.remove()
     })
-    rows.push(entry)
-    rowsHost.append(root)
   }
 
   for (const item of source) addRow(item)
+
+  // 行与行之间的落点：按指针在目标行的上半/下半决定插到前面还是后面
+  rowsHost.addEventListener('dragover', (event) => {
+    if (!dragging) return
+    event.preventDefault()
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
+    const target = (event.target as HTMLElement).closest('.admin-link-row')
+    if (!target || target === dragging) return
+    const rect = target.getBoundingClientRect()
+    const after = event.clientY > rect.top + rect.height / 2
+    rowsHost.insertBefore(dragging, after ? target.nextElementSibling : target)
+  })
+  rowsHost.addEventListener('drop', (event) => {
+    event.preventDefault()
+    if (!dragging) return
+    dragging.classList.remove('is-dragging')
+    dragging = null
+    syncOrder()
+  })
 
   const add = button(d['admin.addLink'], 'ghost')
   add.addEventListener('click', () => addRow({}))
@@ -131,6 +200,7 @@ function linksSection(d: ReturnType<typeof dict>, notify: Notify): HTMLElement {
   save.addEventListener('click', () => {
     void (async () => {
       notify(d['admin.saving'])
+      syncOrder()
       const items = rows
         .map((row) => ({
           label: row.label.value.trim(),
