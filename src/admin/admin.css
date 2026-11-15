@@ -1,345 +1,306 @@
 /* ===================================================================
-   /admin/ 登录页样式。复用 tokens.css 的 MIUIX 令牌，
-   居中一张卡片，不套主站那套 section 框架。
+   后台：与站点同一套视觉语言
+   —— 纸白 / 墨 / 赤陶、衬线标题、等宽小标、1px 细线、不用阴影和大圆角。
+   令牌覆盖写在 :root.admin-page 上，components.css / cap-widget 会自动跟着变。
    =================================================================== */
 
-.admin-shell {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+:root.admin-page{
+  color-scheme: light;
+  --font-sans: Georgia, 'Times New Roman', 'Songti SC', 'Songti TC', serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --bg: #f5f1e9;
+  --bg-2: #fcfaf4;
+  --card: #fcfaf4;
+  --surface-container: #f0eadc;
+  --glass: rgba(245, 241, 233, 0.84);
+  --glass-edge: rgba(255, 255, 255, 0.7);
+  --dim: rgba(34, 30, 24, 0.16);
+
+  --line: #e0d8c8;
+  --line-2: #cdc2ab;
+  --press: rgba(34, 30, 24, 0.06);
+
+  --text: #221e18;
+  --text-2: #6e6759;
+  --text-3: #948b7c;
+
+  --primary: #c14a11;
+  --primary-strong: #a63e0c;
+  --on-primary: #fcfaf4;
+  --danger: #b3261e;
+
+  --shadow-card: none;
+  --shadow-float: 0 18px 44px -24px rgba(48, 38, 26, 0.4);
+  --r-card: 4px;
+  --r-dialog: 8px;
+  --r-btn: 999px;
 }
 
-.admin-card {
-  width: 100%;
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+:root[data-theme='dark'].admin-page{
+  color-scheme: dark;
+  --bg: #171310;
+  --bg-2: #1f1a15;
+  --card: #1f1a15;
+  --surface-container: #241d16;
+  --glass: rgba(23, 19, 16, 0.84);
+  --glass-edge: rgba(255, 255, 255, 0.08);
+  --dim: rgba(0, 0, 0, 0.5);
+  --line: #2e2820;
+  --line-2: #463c2e;
+  --press: rgba(255, 255, 255, 0.06);
+  --text: #ede5d6;
+  --text-2: #9c9282;
+  --text-3: #6e6759;
+  --primary: #e8752f;
+  --primary-strong: #f09049;
+  --on-primary: #1c130b;
+  --danger: #ff9b8f;
 }
 
-.admin-title {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
+:root[data-theme='term'].admin-page{
+  color-scheme: dark;
+  --bg: #060b07;
+  --bg-2: #0b130d;
+  --card: #0b130d;
+  --surface-container: #12210f;
+  --glass: rgba(6, 11, 7, 0.84);
+  --glass-edge: rgba(165, 239, 172, 0.12);
+  --dim: rgba(0, 0, 0, 0.6);
+  --line: #173321;
+  --line-2: #26523a;
+  --press: rgba(66, 245, 129, 0.1);
+  --text: #a5efac;
+  --text-2: #5ea96b;
+  --text-3: #3e7048;
+  --primary: #42f581;
+  --primary-strong: #93f7a6;
+  --on-primary: #04160b;
+  --danger: #ff8f7a;
 }
 
-.admin-sub {
-  font-size: 12.5px;
-  color: var(--text-2);
-  margin-bottom: 2px;
-}
-
-.admin-form,
-.admin-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.admin-label {
-  font-size: 12.5px;
-  color: var(--text-2);
-}
-
-.admin-input {
-  height: 44px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface-container);
+.admin-page body{
+  background: var(--bg);
   color: var(--text);
-  font: inherit;
-  font-size: 15px;
-  transition: border-color var(--dur-fast) var(--ease-standard);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-.admin-input::placeholder {
+.admin-shell{
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(1.8rem, 5vh, 3.2rem) clamp(18px, 4vw, 40px) 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.admin-shell--panel{ max-width: 940px }
+.admin-shell > .admin-lang{ align-self: flex-end }
+
+/* 卡片：细边框 + 直角，不用 MIUIX 的大圆角与阴影 */
+.card,
+.admin-card{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: none;
+  padding: clamp(1.2rem, 3.6vw, 2rem);
+}
+
+.admin-title{
+  font-family: var(--font-sans);
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+.admin-sub{
+  margin-top: .4rem;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  color: var(--text-3);
+}
+.admin-hint{
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  line-height: 1.7;
   color: var(--text-3);
 }
 
-.admin-input:focus {
-  border-color: var(--primary);
+/* 登录表单 */
+.admin-form{
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  margin-top: 1.6rem;
+}
+.admin-label{
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.admin-input,
+.admin-textarea{
+  width: 100%;
+  padding: .78rem .9rem;
+  font-family: var(--font-mono);
+  font-size: .86rem;
+  line-height: 1.4;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: border-color .18s ease, background-color .18s ease;
+}
+.admin-input::placeholder,
+.admin-textarea::placeholder{ color: var(--text-3) }
+.admin-input:focus,
+.admin-textarea:focus{
   outline: none;
+  border-color: var(--primary);
+  background: var(--card);
 }
+.admin-textarea{ resize: vertical; min-height: 84px }
+.admin-form cap-widget{ margin: .5rem 0 .1rem }
+.admin-form .admin-submit{ height: 48px; margin-top: .5rem; flex: 0 0 auto }
 
-/* 内联验证码：正常占位，靠左对齐即可 */
-.admin-form cap-widget {
-  align-self: flex-start;
-}
-
-/*
-  语言切换。
-  登录/提示状态下它是 .admin-shell 的直接子元素，固定在右上角；
-  面板状态下它挂进 .admin-head__actions，随操作区排布，所以只对直接子元素定位。
-*/
-.admin-shell > .admin-lang {
-  position: fixed;
-  top: 14px;
-  right: 14px;
-  z-index: 10;
-}
-
-/*
-  登录按钮。
-  注意 `.btn--primary` 自带 `flex: 1`（那是为**横向**按钮组设计的）；
-  放进纵向的 .admin-form 后等价于 flex-basis: 0，按钮会被压成只剩一行文字的高度
-  （实测 23px，而输入框是 44px）。所以这里显式复位 flex 并给足 CTA 高度。
-*/
-.admin-form .admin-submit {
+/* 按钮：胶囊 + 等宽小字，与首页/验证页一致 */
+.admin-page .btn{
+  /* components.css 里 .btn--primary 是 flex:1（给登录按钮铺满用的），
+     这里的按钮一律按内容宽度，别被拉伸 */
   flex: 0 0 auto;
-  width: 100%;
-  height: 48px;
-  margin-top: 6px;
-  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 1.1rem;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .04em;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
 }
-
-/* 面板里的按钮不受上面那条影响，保持紧凑 */
-.admin-actions .admin-btn {
-  flex: 0 0 auto;
+.admin-page .btn--primary{
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
 }
-
-.admin-status {
-  min-height: 1.3em;
-  font-size: 12.5px;
-  color: var(--text-2);
+.admin-page .btn--primary:hover{
+  background: var(--primary-strong);
+  border-color: var(--primary-strong);
 }
-
-.admin-status[data-kind='error'] {
-  color: #d42f2f;
+.admin-page .btn--ghost{
+  background: transparent;
+  border-color: var(--line-2);
+  color: var(--text);
 }
-
-:root[data-theme='dark'] .admin-status[data-kind='error'] {
-  color: #ff7676;
+.admin-page .btn--ghost:hover{
+  border-color: var(--primary);
+  color: var(--primary);
 }
+.admin-btn{ height: 40px !important; padding: 0 .85rem !important }
 
-.admin-hint {
-  font-size: 12.5px;
-  color: var(--text-2);
-  line-height: 1.7;
-}
-
-@media (max-width: 430px) {
-  .admin-card {
-    max-width: none;
-  }
-}
-
-/* ===================================================================
-   管理面板
-   =================================================================== */
-
-.admin-shell--panel {
-  display: block;
-  place-items: initial;
-  min-height: 100vh;
-  width: 100%;
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 20px 16px calc(60px + env(safe-area-inset-bottom));
-}
-
-.admin-head {
+/* 面板头部 */
+.admin-head{
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 1rem;
   flex-wrap: wrap;
 }
+.admin-head__actions{ display: flex; align-items: center; gap: .5rem; flex-wrap: wrap }
 
-.admin-head__actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+/* 状态条 */
+.admin-status{
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  letter-spacing: .02em;
+  color: var(--text-2);
+  min-height: 1.1em;
+}
+.admin-status[data-kind='error']{ color: var(--danger) }
+.admin-flash:not(:empty){
+  border-left: 2px solid var(--primary);
+  padding-left: .7rem;
+  margin-bottom: .4rem;
 }
 
-.admin-btn {
-  width: auto;
-  height: 38px;
-  padding: 0 16px;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.admin-block {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
-  padding: 16px;
+/* 区块 */
+.admin-panel{ display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1.2rem }
+.admin-block{
   background: var(--card);
-  border-radius: var(--r-card);
-  box-shadow: var(--shadow-card);
-}
-
-.admin-block__title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.admin-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.admin-grid--tight {
-  margin-top: 6px;
-}
-
-.admin-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.admin-input,
-.admin-textarea {
-  width: 100%;
-}
-
-.admin-textarea {
-  height: auto;
-  min-height: 76px;
-  padding: 10px 14px;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface-container);
-  color: var(--text);
-  font: inherit;
-  font-size: 14px;
-  line-height: 1.6;
-  resize: vertical;
+  border-radius: 4px;
+  padding: clamp(1.1rem, 3.2vw, 1.7rem);
 }
-
-.admin-textarea::placeholder {
-  color: var(--text-3);
-}
-
-.admin-textarea:focus {
-  border-color: var(--primary);
-  outline: none;
-}
-
-.admin-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.admin-status--inline {
-  min-height: 0;
-}
-
-/* 项目描述：每个仓库一组 */
-.admin-project {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-}
-
-.admin-project:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-.admin-project__name {
-  font-size: 13px;
+.admin-block__title{
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
+.admin-block > .admin-hint{ margin-top: .4rem }
 
-.admin-project .admin-input {
-  height: 38px;
-  font-size: 13px;
+.admin-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .85rem;
+  margin-top: 1rem;
 }
-
-/* 站点文案：可搜索的长列表 */
-.admin-i18n-toolbar {
+.admin-grid--tight{ grid-template-columns: 1fr }
+.admin-field{ display: flex; flex-direction: column; gap: .4rem }
+.admin-actions{
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: .5rem;
   flex-wrap: wrap;
+  margin-top: 1.1rem;
 }
 
-.admin-i18n-toolbar .admin-input {
-  flex: 1 1 200px;
-}
-
-.admin-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12.5px;
-  color: var(--text-2);
-}
-
-.admin-checkbox {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--primary);
-}
-
-.admin-i18n-list {
-  max-height: 440px;
-  overflow: auto;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-
-.admin-i18n-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-  padding: 8px 4px;
-  border-top: 1px solid var(--line);
-}
-
-.admin-i18n-row:first-child {
-  border-top: 0;
-}
-
-.admin-i18n-key {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 11.5px;
-  color: var(--text-2);
-}
-
-.admin-i18n-row .admin-input {
-  height: 36px;
-  font-size: 13px;
-}
-
-@media (min-width: 720px) {
-  .admin-i18n-row {
-    grid-template-columns: 190px 1fr 1fr;
-    align-items: center;
-  }
-}
-
-/* 链接页编辑器：每行 = 显示文字 / 地址 / 说明 / 删除 */
-.admin-link-rows{ display:flex; flex-direction:column; gap:10px; margin-top:14px }
+/* 链接行编辑器 */
+.admin-select{ appearance: auto; font-family: var(--font-mono) }
+.admin-link-rows{ display: flex; flex-direction: column; gap: 10px; margin-top: 1rem }
 .admin-link-row{
-  display:grid; grid-template-columns:auto 1.1fr 1.8fr 1.3fr auto auto auto;
-  gap:8px; align-items:center;
-  padding:4px; border-radius:12px; border:1px solid transparent;
+  display: grid;
+  grid-template-columns: auto 1.1fr 1.8fr 1.3fr auto auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: 4px;
 }
-.admin-link-row .btn{ padding:0 10px; height:44px; min-width:40px }
-.admin-link-row.is-dragging{ opacity:.45; border-color:var(--primary) }
-.admin-link-row:hover{ border-color:var(--line) }
-/* 拖动握把 */
+.admin-link-row .btn{ padding: 0 10px !important; min-width: 40px; height: 42px !important }
+.admin-link-row.is-dragging{ opacity: .45; border-color: var(--primary) }
+.admin-link-row:hover{ border-color: var(--line) }
 .admin-drag{
-  display:flex; align-items:center; justify-content:center;
-  width:26px; height:44px; cursor:grab; user-select:none;
-  color:var(--text-3); font-size:15px; letter-spacing:-1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 42px;
+  cursor: grab;
+  user-select: none;
+  color: var(--text-3);
+  font-size: 15px;
+  letter-spacing: -1px;
 }
-.admin-drag:active{ cursor:grabbing }
-.admin-drag:hover{ color:var(--primary) }
-.admin-select{ appearance:auto }
-@media (max-width:640px){
-  .admin-link-row{ grid-template-columns:auto 1fr auto auto auto }
-  .admin-link-row > :nth-child(4){ grid-column:2 / -1; order:9 }
+.admin-drag:hover{ color: var(--primary) }
+.admin-drag:active{ cursor: grabbing }
+
+.noscript{
+  max-width: 720px;
+  margin: 4rem auto;
+  padding: 0 1.4rem;
+  font-family: var(--font-sans);
+}
+
+@media (max-width: 640px){
+  .admin-grid{ grid-template-columns: 1fr }
+  .admin-link-row{ grid-template-columns: auto 1fr auto auto auto }
+  .admin-link-row > :nth-child(4){ grid-column: 2 / -1; order: 9 }
 }

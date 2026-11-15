@@ -215,6 +215,8 @@ async function loadSession(): Promise<void> {
   render()
 }
 
+// 后台整页套用站点令牌（纸白 / 墨 / 赤陶），避免和前台风格割裂
+document.documentElement.classList.add('admin-page')
 applyTheme()
 document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en'
 
