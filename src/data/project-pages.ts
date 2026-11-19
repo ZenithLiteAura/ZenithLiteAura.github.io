@@ -15,7 +15,7 @@ export interface ProjectPage {
   summary: Bi
   meta: Array<{ label: Bi; value: Bi }>
   features: Array<{ title: Bi; body: Bi }>
-  shots?: Array<{ src: string; alt: Bi }>
+  shots?: Array<{ src: string; alt: Bi; w?: number; h?: number }>
   start?: { note: Bi; code: string[] }
   links: Array<{ label: Bi; href: string }>
   attribution?: Bi
@@ -122,7 +122,7 @@ export const PROJECTS: ProjectPage[] = [
         body: { zh: 'demo.py 用示例视频跑一遍全部功能。', en: 'demo.py walks through every feature with a sample video.' },
       },
     ],
-    shots: [{ src: '/projects/motioncraft/demo.jpg', alt: { zh: '转换出来的动态照片示例', en: 'A converted motion photo sample' } }],
+    shots: [{ src: '/projects/motioncraft/demo.jpg', w: 720, h: 814, alt: { zh: '转换出来的动态照片示例', en: 'A converted motion photo sample' } }],
     start: {
       note: { zh: '先装 FFmpeg 和 ExifTool，再跑一条命令装依赖。', en: 'Install FFmpeg and ExifTool first, then one command for the Python deps.' },
       code: [
@@ -184,10 +184,10 @@ export const PROJECTS: ProjectPage[] = [
       },
     ],
     shots: [
-      { src: '/projects/nexio/timetable.png', alt: { zh: '主课程表', en: 'Main timetable' } },
-      { src: '/projects/nexio/add.png', alt: { zh: '添加课程', en: 'Add a course' } },
-      { src: '/projects/nexio/import.png', alt: { zh: '教务导入', en: 'Campus import' } },
-      { src: '/projects/nexio/reminder.png', alt: { zh: '课程提醒', en: 'Course reminder' } },
+      { src: '/projects/nexio/timetable.png', w: 1288, h: 2688, alt: { zh: '主课程表', en: 'Main timetable' } },
+      { src: '/projects/nexio/add.png', w: 1288, h: 2688, alt: { zh: '添加课程', en: 'Add a course' } },
+      { src: '/projects/nexio/import.png', w: 1288, h: 2688, alt: { zh: '教务导入', en: 'Campus import' } },
+      { src: '/projects/nexio/reminder.png', w: 1288, h: 2688, alt: { zh: '课程提醒', en: 'Course reminder' } },
     ],
     start: {
       note: { zh: '从上游 Releases 下载安装包，或直接看官网。', en: 'Get the APK from upstream Releases, or visit the project site.' },

@@ -64,7 +64,13 @@ function renderShots(project: ProjectPage): HTMLElement | null {
     { class: 'p-shots' },
     project.shots.map((shot) =>
       h('figure', { class: 'p-shot' }, [
-        h('img', { src: shot.src, alt: pick(shot.alt), loading: 'lazy', decoding: 'async' }),
+        h('img', {
+          src: shot.src,
+          alt: pick(shot.alt),
+          loading: 'lazy',
+          decoding: 'async',
+          ...(shot.w && shot.h ? { width: String(shot.w), height: String(shot.h) } : {}),
+        }),
         h('figcaption', { class: 'p-shot__cap mono', text: pick(shot.alt) }),
       ]),
     ),
