@@ -151,6 +151,17 @@ svg{ flex:none }
 .hero-meta{ margin-top:2.4rem; font-size:.78rem; color:var(--ink-2) }
 .hero-meta b{ color:var(--accent); font-weight:500 }
 
+/* 项目官网入口 */
+.site-list{ margin-top:1.5rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px }
+.site-card{
+  display:flex; flex-direction:column; gap:.35rem; padding:.9rem 1rem;
+  border:1px solid var(--line); border-radius:4px; background:var(--bg-2);
+  text-decoration:none; color:var(--ink); transition:border-color .18s ease;
+}
+.site-card:hover{ border-color:var(--accent) }
+.site-card__name{ font-size:1rem; font-weight:500 }
+.site-card__tag{ font-size:.72rem; color:var(--ink-2); line-height:1.6 }
+
 /* git log 跑马灯 */
 .ticker{ margin-top:4.5rem; border-block:1px solid var(--line); overflow:hidden; padding:.75rem 0; user-select:none }
 .ticker-inner{ display:flex; width:max-content; animation:tickmove 34s linear infinite }
@@ -444,6 +455,7 @@ svg{ flex:none }
   <!-- 开源计数 -->
   <section id="oss" class="sec wrap">
     <div class="sec-head reveal"><span class="idx mono">02</span><h2 data-i18n="sec.oss">项目</h2><span class="rule"></span></div>
+    <div class="site-list reveal" id="siteList"></div>
     <p class="oss-status mono reveal" id="ossStatus"><span class="dot"></span> querying api.github.com …</p>
     <div class="oss-list" id="ossList"></div>
   </section>
@@ -941,6 +953,32 @@ ttBtns.forEach(b => b.addEventListener('click', () => setTheme(b.dataset.set, tr
 });
 
 /* ---------- 打字机问候 ---------- */
+/* 项目官网入口 */
+const SITES = [
+  { slug:'nezo', name:'Nezo', zh:'剪贴板收藏器 + 解析下载', en:'Clipboard collector + downloader' },
+  { slug:'motioncraft', name:'MotionCraft', zh:'把视频变成动态照片', en:'Videos → motion photos' },
+  { slug:'nexio', name:'Nexio 课程表', zh:'两种视图 · 本地优先', en:'Two views · local first' },
+  { slug:'prism', name:'Prism Gallery', zh:'四套风格的离线相册', en:'Offline gallery, four styles' },
+];
+function renderSites(){
+  const host = $('#siteList');
+  if (!host) return;
+  host.replaceChildren(...SITES.map((s) => {
+    const a = document.createElement('a');
+    a.className = 'site-card';
+    a.href = '/projects/' + s.slug + '/';
+    const name = document.createElement('span');
+    name.className = 'site-card__name';
+    name.textContent = s.name;
+    const tag = document.createElement('span');
+    tag.className = 'site-card__tag mono';
+    tag.textContent = LANG === 'en' ? s.en : s.zh;
+    a.append(name, tag);
+    return a;
+  }));
+}
+renderSites();
+
 const PHRASES = [
   '你好，我是 ZenithLiteAura。',
   '路漫漫其修远兮，吾将上下而求索。|||——屈原《离骚》',
@@ -1112,6 +1150,7 @@ function applyLang(lang){
   else { twText.textContent = ''; twTimer = setTimeout(twStep, 240); }
 
   // 项目描述与状态行也要跟着换
+  renderSites();
   renderOss();
   if (ossData) tryFillOSS();
   renderOssStatus();
