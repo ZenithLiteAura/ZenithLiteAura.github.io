@@ -1,0 +1,14 @@
+﻿{
+  "enabled": true,
+  "id": "nezo-0001",
+  "updatedAt": "2026-11-20T15:13:11.078541Z",
+  "level": "info",
+  "title": { "zh": "Nezo 2.9 已发布", "en": "Nezo 2.9 is out" },
+  "body": { "zh": "本次更新：下载完成自动校验并移入回收站、首页长按多选一键下载、日志与诊断（实时日志/历史记录）、后台收录提示重做、Shizuku 兼容修复。近期正在筹划一个重大更新，短期内不会再更新。", "en": "Downloads are verified and archived to Trash, long-press multi-select, in-app diagnostics, refined capture toast, Shizuku fixes. A major update is being planned; no more updates in the short term." },
+  "url": "https://github.com/ZenithLiteAura/Zeno/releases",
+  "startAt": "",
+  "endAt": "",
+  "minVersion": "",
+  "maxVersion": "",
+  "once": true
+}
